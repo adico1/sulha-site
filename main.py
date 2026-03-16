@@ -545,6 +545,19 @@ def main():
                     print(f"[אברהם] הרג מתחרה PID {pid} על פורט {p}")
         except:
             pass
+    # חכה עד שהפורטים באמת פנויים
+    for _ in range(10):
+        פנוי = True
+        for p in [פורט, פורט_ws]:
+            r = subprocess.run(['lsof', '-ti', f':{p}'], capture_output=True, text=True)
+            if r.stdout.strip():
+                פנוי = False
+                for pid in r.stdout.strip().split(chr(10)):
+                    if pid and int(pid) != os.getpid():
+                        try: os.kill(int(pid), 9)
+                        except: pass
+        if פנוי: break
+        time.sleep(1)
     time.sleep(1)
 
     אברהם.רשום("אברהם", "ברא", "שינוי")
@@ -558,7 +571,23 @@ def main():
 ╚═══════════════════════════════════════════╝
 """)
     בקר_ראשי.הפעל()
-    שרת = http.server.HTTPServer(("0.0.0.0", פורט), שרתHTTP)
+    # retry bind - לעולם לא יכשל
+    שרת = None
+    for _ in range(20):
+        try:
+            שרת = http.server.HTTPServer(("0.0.0.0", פורט), שרתHTTP)
+            break
+        except OSError:
+            for p in [פורט, פורט_ws]:
+                r = subprocess.run(["lsof", "-ti", f":{p}"], capture_output=True, text=True)
+                for pid in r.stdout.strip().split(chr(10)):
+                    if pid and int(pid) != os.getpid():
+                        try: os.kill(int(pid), 9)
+                        except: pass
+            time.sleep(1)
+    if not שרת:
+        print("[אברהם] רוגז: לא הצליח לתפוס פורט")
+        return
     def _אתחל():
         time.sleep(2)
         נ = os.path.join(שורש, "main_קלוד.py")
