@@ -542,6 +542,22 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type"); self.end_headers()
         self.wfile.write(json.dumps(d, ensure_ascii=False, indent=2).encode("utf-8"))
         בדוק_ספירות(self.path, d)
+
+    def _py(self, d, שם="צפה"):
+        """פלט קוד פייתון - לא JSON"""
+        self.send_response(200); self.send_header("Content-Type", "text/x-python; charset=utf-8")
+        self.send_header("Access-Control-Allow-Origin", "*"); self.end_headers()
+        קוד = f"# {שם}\nfrom datetime import datetime\nשעה = \"{datetime.now().isoformat()}\"\n"
+        if isinstance(d, dict):
+            for מ, ע in d.items():
+                מב = str(מ).replace("-", "_").replace("/", "_").replace(" ", "_")
+                קוד += f"{מב} = {repr(ע)}\n"
+        elif isinstance(d, list):
+            קוד += f"רשימה = {repr(d)}\n"
+        else:
+            קוד += f"ערך = {repr(d)}\n"
+        self.wfile.write(קוד.encode("utf-8"))
+        בדוק_ספירות(self.path, d)
         # כל בקשה → שלח מיד לדפדפנים
         try:
             נ = urllib.parse.unquote(self.path.rstrip("/")) or "/"
