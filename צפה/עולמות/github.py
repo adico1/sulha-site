@@ -1,6 +1,6 @@
 # github
 from datetime import datetime
-שעה = "2026-03-16T23:07:07.238209"
+שעה = "2026-03-16T23:08:46.418579"
 פנימי = 'github'
 חיצוני = 'https://api.github.com'
 סוג = 'חוץ'
