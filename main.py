@@ -509,6 +509,9 @@ async def ws_צופה():
 # ══════════════════════════════════════
 
 
+# זיכרון טעויות - אף פעם לא חוזר על אותה טעות
+_טעויות_ידועות = set()
+
 # בדיקות עשר ספירות - על כל קלט תהליך ופלט
 def בדוק_ספירות(נתיב, תשובה):
     """בדיקת עשר ספירות על כל בקשה"""
@@ -525,7 +528,13 @@ def בדוק_ספירות(נתיב, תשובה):
     ספירות["דרום"] = True  # נשלח
     # רוגז אם נכשל
     if ספירות["רע"]:
-        אברהם.רשום("ספירות/רוגז", f"{נתיב}:{תשובה.get('שגיאה','')}", "שינוי")
+        שגיאה = str(תשובה.get("שגיאה", "")) if isinstance(תשובה, dict) else str(תשובה)
+        מפתח = f"{נתיב}:{שגיאה[:50]}"
+        if מפתח not in _טעויות_ידועות:
+            _טעויות_ידועות.add(מפתח)
+            אברהם.רשום("ספירות/רוגז", f"חדש:{מפתח}", "שינוי")
+        else:
+            אברהם.רשום("ספירות/איסור", f"חוזר:{מפתח}", "שינוי")
     return ספירות
 
 class שרתHTTP(http.server.BaseHTTPRequestHandler):
@@ -783,6 +792,15 @@ except ImportError:
         שרת.server_close()
 
 if __name__ == "__main__":
+    # שמור היסטוריה לקובץ יומי
+    import shutil
+    ספר = os.path.join(os.path.dirname(os.path.abspath(__file__)), "שלשה_ספרים.ספר")
+    if os.path.isfile(ספר):
+        יום = __import__("datetime").datetime.now().strftime("%Y-%m-%d")
+        היסטוריה = os.path.join(os.path.dirname(os.path.abspath(__file__)), f"ספרים_{יום}.ספר")
+        if not os.path.isfile(היסטוריה):
+            shutil.copy2(ספר, היסטוריה)
+
     while True:
         try:
             main()
