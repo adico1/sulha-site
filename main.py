@@ -151,7 +151,7 @@ class בקר:
                 {"סטטוס": ("/repos/adico1/sulha-site/pages", "GET"),
                  "צפיות": ("/repos/adico1/sulha-site/traffic/views", "GET"),
                  "תוכן": ("/repos/adico1/sulha-site/contents/", "GET")})
-        self.ממשקים["עצמי"] = צופה("עצמי", f"http://localhost:{פורט}", פעולות={"שורש": ("/", "GET")})
+        self.ממשקים["עצמי"] = צופה("עצמי", f"http://localhost:{פורט}", פעולות={"צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"), "שעה": ("/api/%D7%A9%D7%A2%D7%94", "GET")})
 
     def צפה_פנים(self):
         return {
