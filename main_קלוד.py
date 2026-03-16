@@ -120,7 +120,10 @@ def בקשות_אדי():
     # חפש בכל המקומות האפשריים
     נתיבים = [
         str(Path.home() / ".claude/projects/-Users-adicohen-----------------------------------/*.jsonl"),
+        str(Path.home() / ".claude/projects/-Users-adicohen-------------/*.jsonl"),
     ]
+    # סנן רק שיחות עם cwd שמכיל יוצאים_לטייל
+    _session_id = None
     כל_בקשות = []
     for תבנית in נתיבים:
         for לוג in glob.glob(תבנית, recursive=True):
@@ -128,8 +131,8 @@ def בקשות_אדי():
                 for line in f:
                     try:
                         d = json.loads(line)
-                        # נסה פורמטים שונים
-                        if d.get("type") == "human" or d.get("role") == "user":
+                        # פורמט claude: type=user, message={content:[{type:text,text:...}]}
+                        if d.get("type") == "user" or d.get("type") == "human" or d.get("role") == "user":
                             msg = d.get("message", d.get("content", d))
                             if isinstance(msg, str) and len(msg) > 5:
                                 כל_בקשות.append({"מי": "אדי", "מה": msg[:500]})
