@@ -219,7 +219,7 @@ def ראשי():
                         if isinstance(msg, dict):
                             for c in msg.get("content", []):
                                 if isinstance(c, dict) and c.get("type") == "text" and len(c["text"]) > 5:
-                                    בקשות_לוג.append(c["text"][:100])
+                                    בקשות_לוג.append(c["text"])
                 except:
                     pass
 
