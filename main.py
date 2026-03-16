@@ -402,11 +402,12 @@ if(רסהכ>0){{h+='<h3>רוגזים ('+רסהכ+')</h3>';for(const[n,v] of Obje
 if(ת.נתיב){{h+='<h3>בקשה אחרונה</h3><div class="rw"><div class="c">'+ת.נתיב+'</div><div class="sm">'+ת.שעה+'</div></div>'}}
 if(ת.צופי_דפדפן){{h+='<h3>דפדפנים ('+ת.צופי_דפדפן.length+')</h3>';for(const ד of ת.צופי_דפדפן){{h+='<div class="rw"><div class="sm"><span class="נ g"></span>'+ד.מי+'</div></div>'}}}}
 if(ת.בקשות_אדי){{h+='<h3>בקשות אדי ('+ת.בקשות_אדי.length+')</h3>';for(const ב of ת.בקשות_אדי.slice(-20).reverse()){{h+='<div class="rw"><div class="sm">'+ב.מה.substring(0,150)+'</div></div>'}}}}
+if(ת.תת){{h+='<div class="rw" style="background:#020"><div class="c">תת: '+ת.תת.מה+'</div></div>'}}
 document.getElementById("ת").innerHTML=h}}
 function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נורה").className="נ g";document.getElementById("סט").textContent="מחובר"}};
 ws.onclose=()=>{{document.getElementById("נורה").className="נ r";document.getElementById("סט").textContent="מנותק";setTimeout(c,3000)}};
-ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"){{const h=JSON.stringify(d.תוכן);if(h!==lH){{lH=h;draw(d)}}}} else if(d.מה==="בקשה"){{draw({{תוכן:d.תוכן}})}}}}}};c();
+ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"||d.מה==="בקשה"||d.מה==="תת-בקשה"){{const h=JSON.stringify(d.תוכן);if(h!==lH){{lH=h;draw(d)}}}}}}}};c();
 </script>
 {שעון_js()}
 </body></html>'''
@@ -552,6 +553,8 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         elif נ == "/api/ספרים": self._json({"אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()})
         elif נ == "/api/עולמות": self._json(עולמות)
         elif נ == "/api/צבאות": self._json(בקר_ראשי.צבאות())
+        elif נ == "/api/מחולל-בקשה":
+            self._json({"שגיאה": "POST בלבד"})
         elif נ == "/api/שעה": self._json({"שעה": datetime.now().isoformat(), "יום_הולדת_יקום": datetime.now().strftime("%H:%M:%S.%f")[:-3]})
         elif נ.startswith("/api/ממשק/"):
             ח = נ.split("/")
@@ -602,6 +605,8 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
                 self._json(בקר_ראשי.ממשקים[ממשק].בקש(גוף.get("נתיב", "/"), גוף.get("שיטה", "GET")))
             else: self._json({"שגיאה": f"ממשק '{ממשק}' לא קיים"})
         elif נ == "/api/צבאות": self._json(בקר_ראשי.צבאות())
+        elif נ == "/api/מחולל-בקשה":
+            self._json({"שגיאה": "POST בלבד"})
         else: self._json({"מי": "אברהם", "מה": נ})
 
     def log_message(self, f, *a): pass
