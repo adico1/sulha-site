@@ -57,8 +57,8 @@ def בקש(נתיב, שיטה="GET", גוף=None):
         בקשה = urllib.request.Request(כתובת, data=נתונים, method=שיטה)
         בקשה.add_header("Content-Type", "application/json; charset=utf-8")
         בקשה.add_header("User-Agent", f"claude/{זיהוי['טביעת_אצבע']}")
-        בקשה.add_header("X-מי", זיהוי["מי"])
-        בקשה.add_header("X-סוג", זיהוי["סוג"])
+        בקשה.add_header("X-Who", f"claude/{זיהוי['טביעת_אצבע']}")
+        בקשה.add_header("X-Type", "AI-external")
         with urllib.request.urlopen(בקשה, timeout=15) as תגובה:
             return json.loads(תגובה.read().decode("utf-8"))
     except Exception as e:
