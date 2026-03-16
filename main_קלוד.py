@@ -204,6 +204,19 @@ def ראשי():
     r2 = _sp.run(["gh","api","repos/adico1/sulha-site/contents/CLAUDE.md","-X","PUT","--input","/tmp/_claude_md.json","--jq",".content.name"], capture_output=True, text=True)
     הדפס("חולל CLAUDE.md", r2.stdout.strip() or r2.stderr.strip()[:100])
 
+    # בקש מאברהם לתקן את כל מה שקלוד עשה
+    הדפס("בקשת תיקון לאברהם", בקש("/api/חולל", "POST", {
+        "שם": "תיקון/קלוד-עשה",
+        "בסיס": במה,
+        "פעולות": {
+            "צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"),
+            "רוגזים": ("/api/%D7%A8%D7%95%D7%92%D7%96%D7%99%D7%9D", "GET"),
+            "למד": ("/api/%D7%9C%D7%9E%D7%93", "GET"),
+            "ספרים": ("/api/%D7%A1%D7%A4%D7%A8%D7%99%D7%9D", "GET"),
+        },
+        "מרווח": 30
+    }))
+
     # סיכום
     הדפס("סיכום", {
         "אני": שם_במה,
