@@ -607,6 +607,26 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         elif נ == "/api/צבאות": self._json(בקר_ראשי.צבאות())
         elif נ == "/api/מחולל-בקשה":
             self._json({"שגיאה": "POST בלבד"})
+        elif נ == "/api/מחולל-בקשה":
+            טקסט = גוף.get("בקשה", גוף.get("מה", ""))
+            מילים = טקסט.split()
+            תתי = []
+            for i in range(len(מילים)):
+                for j in range(2, min(4, len(מילים) - i + 1)):
+                    תתי.append({"מי": גוף.get("מי", "מחולל"), "מה": " ".join(מילים[i:i+j])})
+            for ת in תתי:
+                אבם.רשום(ת["מי"], ת["מה"])
+                אברהם.רשום(ת["מי"], ת["מה"])
+            try:
+                for ת in תתי:
+                    הודעה = json.dumps({"מי": "מחולל", "מה": "תת-בקשה", "תוכן": {
+                        "בקשה": טקסט, "תת": ת, "שעה": datetime.now().isoformat(),
+                        **בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()
+                    }}, ensure_ascii=False)
+                    for ws in list(ws_מחוברים):
+                        asyncio.run_coroutine_threadsafe(ws.send(הודעה), _ws_event_loop)
+            except: pass
+            self._json({"בקשה": טקסט, "תתי_בקשות": תתי, "סהכ": len(תתי)})
         else: self._json({"מי": "אברהם", "מה": נ})
 
     def log_message(self, f, *a): pass
