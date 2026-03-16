@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>סולחא</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f0e8;color:#2c2c2c;min-height:100vh}
+#אתר{width:100%;height:100vh;border:none}
+.סטטוס{position:fixed;bottom:8px;left:8px;font-size:.7em;color:#999}
+</style></head><body>
+<div id="תוכן"></div>
+<div class="סטטוס"><span id="נורה" style="color:red">●</span> <span id="ס">מתחבר</span></div>
+<script>
+let ws,תוכן_קודם="";
+function חבר(){
+ws=new WebSocket("ws://localhost:8772");
+ws.onopen=()=>{
+document.getElementById("נורה").style.color="green";
+document.getElementById("ס").textContent="חי";
+ws.send(JSON.stringify({מי:"משתמש",מה:"אתר"}));
+};
+ws.onclose=()=>{
+document.getElementById("נורה").style.color="red";
+document.getElementById("ס").textContent="מנותק";
+setTimeout(חבר,3000);
+};
+ws.onmessage=e=>{
+const d=JSON.parse(e.data);
+if(d.מה==="אתר"&&d.תוכן!==תוכן_קודם){
+תוכן_קודם=d.תוכן;
+document.getElementById("תוכן").innerHTML=d.תוכן;
+}
+else if(d.מה==="צפה_פנים"){
+// משתמש לא רואה ניהול - רק יודע שחי
+document.getElementById("ס").textContent="חי";
+}
+};
+}
+חבר();
+</script></body></html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סולחא - צפה אדי כהן</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+
+        .צפה-ראשי {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+        }
+
+        header {
+            background: #16213e;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #e8d9b0;
+        }
+        header .שם { color: #e8d9b0; font-size: 1.4em; font-weight: bold; }
+        header .מצב { display: flex; gap: 16px; align-items: center; }
+        .נורה { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-inline-end: 6px; }
+        .נורה.ירוק { background: #27ae60; box-shadow: 0 0 6px #27ae60; }
+        .נורה.אדום { background: #c0392b; box-shadow: 0 0 6px #c0392b; }
+        .נורה.כתום { background: #f39c12; box-shadow: 0 0 6px #f39c12; }
+
+        .תוכן {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 1fr;
+            overflow: hidden;
+        }
+
+        /* צד - ניהול */
+        .ניהול {
+            background: #16213e;
+            padding: 16px;
+            overflow-y: auto;
+            border-inline-end: 1px solid #2a2a4a;
+        }
+        .ניהול h3 { color: #e8d9b0; margin-bottom: 12px; font-size: 0.95em; }
+        .ממשק-כרטיס {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #2a2a4a;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .ממשק-כרטיס:hover { border-color: #e8d9b0; }
+        .ממשק-כרטיס.פעיל { border-color: #e8d9b0; background: #1e2a4a; }
+        .ממשק-שם { font-weight: bold; margin-bottom: 4px; }
+        .ממשק-מטא { font-size: 0.8em; color: #888; }
+
+        .כפתור {
+            background: #e8d9b0;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85em;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .כפתור:hover { background: #d4c496; }
+
+        /* מרכז - צפיות */
+        .צפיות {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            overflow: hidden;
+        }
+        .צפיות-כותרת {
+            padding: 12px 20px;
+            background: #1e1e3a;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .צפיות-תוכן {
+            overflow-y: auto;
+            padding: 16px 20px;
+        }
+        .צפיות-רגל {
+            padding: 8px 20px;
+            background: #1e1e3a;
+            border-top: 1px solid #2a2a4a;
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .צפייה {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #2a2a4a;
+        }
+        .צפייה-כותרת {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #e8d9b0;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .צפייה-תוכן {
+            background: #0d1117;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Menlo', 'Consolas', monospace;
+            font-size: 0.8em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #c9d1d9;
+        }
+
+        .רוגז {
+            background: #2d1b1b;
+            border: 1px solid #5a2020;
+        }
+
+        /* ליבה פנים חוץ */
+        .אזורים {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .אזור {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid #2a2a4a;
+        }
+        .אזור-שם { color: #e8d9b0; font-weight: bold; margin-bottom: 6px; }
+        .אזור-מספר { font-size: 1.8em; font-weight: bold; }
+
+        .טוען { color: #888; text-align: center; padding: 40px; }
+    </style>
+</head>
+<body>
+
+<div class="צפה-ראשי">
+    <header>
+        <div class="שם">סולחא - צפה אדי כהן</div>
+        <div class="מצב">
+            <span id="מצב-חיבור"><span class="נורה כתום"></span>מתחבר...</span>
+            <span id="מצב-זמן"></span>
+        </div>
+    </header>
+
+    <div class="תוכן">
+        <div class="ניהול">
+            <h3>ניהול כלל המערכת</h3>
+            <button class="כפתור" onclick="צפהפנים()">צפה פנים</button>
+            <button class="כפתור" onclick="צפהרוגזים()">רוגזים</button>
+            <button class="כפתור" onclick="צפהמחולל()">מחולל</button>
+            <hr style="border-color:#2a2a4a; margin: 12px 0;">
+            <h3>ממשקים</h3>
+            <div id="רשימת-ממשקים">
+                <div class="טוען">טוען...</div>
+            </div>
+            <hr style="border-color:#2a2a4a; margin: 12px 0;">
+            <h3>שלשה ספרים</h3>
+            <div id="סיכום-ספרים" style="font-size:0.8em; color:#888;"></div>
+        </div>
+
+        <div class="צפיות">
+            <div class="צפיות-כותרת">
+                <span id="צפיות-כותרת-טקסט">ליבה · פנים · חוץ</span>
+                <span id="צפיות-עדכון" style="font-size:0.8em; color:#666;"></span>
+            </div>
+            <div class="צפיות-תוכן" id="צפיות-תוכן">
+                <div class="טוען">מתחבר אל הבמה...</div>
+            </div>
+            <div class="צפיות-רגל">
+                <span id="צפיות-סטטוס">ממתין</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const במה = "http://localhost:8771";
+let עדכון_אחרון = null;
+let מרווח_צפייה = null;
+
+async function בקש(נתיב) {
+    try {
+        const ת = await fetch(`${במה}${נתיב}`);
+        return await ת.json();
+    } catch (e) {
+        return { שגיאה: e.message };
+    }
+}
+
+function הצגJSON(תוכן) {
+    return JSON.stringify(תוכן, null, 2);
+}
+
+function צפייהHTML(כותרת, תוכן, סוג = "") {
+    return `<div class="צפייה ${סוג}">
+        <div class="צפייה-כותרת">
+            <span>${כותרת}</span>
+            <span style="font-size:0.8em;color:#666;">${new Date().toLocaleTimeString('he-IL')}</span>
+        </div>
+        <div class="צפייה-תוכן">${typeof תוכן === 'string' ? תוכן : הצגJSON(תוכן)}</div>
+    </div>`;
+}
+
+function עדכןמצב(מחובר) {
+    const אל = document.getElementById("מצב-חיבור");
+    if (מחובר) {
+        אל.innerHTML = '<span class="נורה ירוק"></span>מחובר';
+    } else {
+        אל.innerHTML = '<span class="נורה אדום"></span>מנותק';
+    }
+    document.getElementById("מצב-זמן").textContent = new Date().toLocaleTimeString('he-IL');
+}
+
+async function צפהפנים() {
+    document.getElementById("צפיות-כותרת-טקסט").textContent = "צפה פנים - ליבה · פנים · חוץ";
+    const תוכן = document.getElementById("צפיות-תוכן");
+    תוכן.innerHTML = '<div class="טוען">צופה...</div>';
+
+    const צפה = await בקש("/api/%D7%A6%D7%A4%D7%94");
+    if (צפה.שגיאה) {
+        עדכןמצב(false);
+        תוכן.innerHTML = צפייהHTML("שגיאה", צפה, "רוגז");
+        return;
+    }
+    עדכןמצב(true);
+
+    let html = '<div class="אזורים">';
+    html += `<div class="אזור"><div class="אזור-שם">ליבה</div><div class="אזור-מספר">${צפה.ליבה?.ממשקים || 0}</div><div class="ממשק-מטא">ממשקים</div></div>`;
+    html += `<div class="אזור"><div class="אזור-שם">פנים</div><div class="אזור-מספר">${Object.keys(צפה.פנים || {}).length}</div><div class="ממשק-מטא">צופים</div></div>`;
+    html += `<div class="אזור"><div class="אזור-שם">חוץ</div><div class="אזור-מספר">${צפה.חוץ?.דומיין ? '✓' : '✗'}</div><div class="ממשק-מטא">${צפה.חוץ?.דומיין || 'לא מוגדר'}</div></div>`;
+    html += '</div>';
+
+    // פנים - כל ממשק
+    if (צפה.פנים) {
+        for (const [שם, מ] of Object.entries(צפה.פנים)) {
+            html += צפייהHTML(`ממשק: ${שם}`, מ, מ.מחובר ? '' : 'רוגז');
+        }
+    }
+
+    // רוגזים ממתינים
+    if (צפה.ליבה?.רוגזים_ממתינים > 0) {
+        html += צפייהHTML(`רוגזים ממתינים: ${צפה.ליבה.רוגזים_ממתינים}`, "לחץ 'רוגזים' לפרטים", "רוגז");
+    }
+
+    תוכן.innerHTML = html;
+    עדכןממשקים(צפה.פנים);
+    document.getElementById("צפיות-עדכון").textContent = new Date().toLocaleTimeString('he-IL');
+}
+
+async function צפהרוגזים() {
+    document.getElementById("צפיות-כותרת-טקסט").textContent = "רוגזים ממתינים";
+    const תוכן = document.getElementById("צפיות-תוכן");
+    const רוגזים = await בקש("/api/%D7%A8%D7%95%D7%92%D7%96%D7%99%D7%9D");
+    let html = '';
+    if (רוגזים.ממתינים) {
+        for (const ר of רוגזים.ממתינים.reverse()) {
+            html += צפייהHTML(`${ר.מקור} - ${ר.זמן?.substring(11,19) || ''}`, ר.סיבה, "רוגז");
+        }
+        html += `<div style="text-align:center;color:#666;margin-top:12px;">סה"כ: ${רוגזים.סהכ}</div>`;
+    } else {
+        html = צפייהHTML("רוגזים", רוגזים);
+    }
+    תוכן.innerHTML = html;
+}
+
+async function צפהמחולל() {
+    document.getElementById("צפיות-כותרת-טקסט").textContent = "מחולל - צופים בנים";
+    const תוכן = document.getElementById("צפיות-תוכן");
+    const מחולל = await בקש("/api/%D7%9E%D7%97%D7%95%D7%9C%D7%9C");
+    let html = '';
+    if (מחולל && !מחולל.שגיאה) {
+        for (const [שם, בן] of Object.entries(מחולל)) {
+            html += צפייהHTML(`בן: ${שם}`, בן, בן.מחובר ? '' : 'רוגז');
+        }
+    } else {
+        html = צפייהHTML("מחולל", מחולל);
+    }
+    תוכן.innerHTML = html;
+}
+
+async function צפהממשק(שם) {
+    document.getElementById("צפיות-כותרת-טקסט").textContent = `ממשק: ${שם}`;
+    const תוכן = document.getElementById("צפיות-תוכן");
+
+    // סמן פעיל
+    document.querySelectorAll('.ממשק-כרטיס').forEach(k => k.classList.remove('פעיל'));
+    const כרטיס = document.querySelector(`[data-ממשק="${שם}"]`);
+    if (כרטיס) כרטיס.classList.add('פעיל');
+
+    const מצב = await בקש(`/api/%D7%9E%D7%9E%D7%A9%D7%A7/${encodeURIComponent(שם)}`);
+    let html = צפייהHTML(`צפה פנים: ${שם}`, מצב, מצב.מחובר ? '' : 'רוגז');
+
+    // עשה פעולות ידועות
+    if (מצב.שפה?.פעולות_ידועות) {
+        for (const פ of מצב.שפה.פעולות_ידועות) {
+            const ת = await בקש(`/api/%D7%9E%D7%9E%D7%A9%D7%A7/${encodeURIComponent(שם)}/${encodeURIComponent(פ)}`);
+            html += צפייהHTML(`עשה: ${שם}/${פ}`, ת);
+        }
+    }
+
+    תוכן.innerHTML = html;
+}
+
+function עדכןממשקים(פנים) {
+    const אל = document.getElementById("רשימת-ממשקים");
+    if (!פנים) return;
+    let html = '';
+    for (const [שם, מ] of Object.entries(פנים)) {
+        const נורה = מ.מחובר ? 'ירוק' : 'אדום';
+        html += `<div class="ממשק-כרטיס" data-ממשק="${שם}" onclick="צפהממשק('${שם}')">
+            <div class="ממשק-שם"><span class="נורה ${נורה}"></span>${שם}</div>
+            <div class="ממשק-מטא">צפיות: ${מ.צפיות || 0} | רוגזים: ${מ.רוגזים || 0}</div>
+        </div>`;
+    }
+    אל.innerHTML = html;
+}
+
+// צפייה מחזורית - כל 10 שניות
+async function לולאת_צפייה() {
+    await צפהפנים();
+    מרווח_צפייה = setInterval(צפהפנים, 10000);
+}
+
+// התחל
+לולאת_צפייה();
+document.getElementById("צפיות-סטטוס").textContent = "צפייה פעילה - כל 10 שניות";
+</script>
+
+</body>
+</html>
