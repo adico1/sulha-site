@@ -303,11 +303,22 @@ def ראשי():
     # מצא לוג שיחה זו לפי תיקיית הפרויקט
     import glob as _g2
     לוג_פרויקט = _g2.glob(str(Path.home() / ".claude/projects/-Users-adicohen-------------/**"), recursive=True)
-    כתוב_py(f"{בסיס}/בדיקות", "לוג_נתיבים", {
-        "פרויקט": [ל for ל in לוג_פרויקט if not "/." in ל][:30],
-        "סהכ_jsonl": len(כל_jsonl),
-        "בקשות_נמצאו": len(בקשות_לוג)
-    })
+    # חקור פורמט לוג
+    _לוג_דוגמה = []
+    _לוג_נתיב = str(Path.home() / ".claude/projects/-Users-adicohen-----------------------------------")
+    import glob as _g3
+    for _lf in _g3.glob(_לוג_נתיב + "/*.jsonl"):
+        with open(_lf, "r") as _f:
+            for i, _line in enumerate(_f):
+                if i < 3:
+                    try:
+                        _d = json.loads(_line)
+                        _לוג_דוגמה.append({"keys": list(_d.keys())[:10], "type": _d.get("type"), "role": _d.get("role"), "preview": str(_d)[:200]})
+                    except:
+                        _לוג_דוגמה.append({"raw": _line[:200]})
+                else:
+                    break
+    כתוב_py(f"{בסיס}/בדיקות", "לוג_פורמט", {"דוגמאות": _לוג_דוגמה, "בקשות_נמצאו": len(בקשות_לוג)})
 
 
 if __name__ == "__main__":
