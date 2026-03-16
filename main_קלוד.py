@@ -272,7 +272,7 @@ def כוון_אברהם():
         "מרווח": 30
     }))
 
-    # קרא main.py דרך אברהם → GitHub API, מצא עצמי, תקן
+    # תקן main.py ישירות + צבאות
     import base64
     main_gh = בקש("/api/בקש", "POST", {"ממשק": "github", "נתיב": "/repos/adico1/sulha-site/contents/main.py", "שיטה": "GET"})
     main_ת = main_gh.get("תגובה", main_gh) if isinstance(main_gh, dict) else main_gh
