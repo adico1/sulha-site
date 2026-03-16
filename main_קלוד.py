@@ -273,46 +273,23 @@ def כוון_אברהם():
     }))
 
     # תקן main.py ישירות + צבאות
-    import base64
-    main_gh = בקש("/api/בקש", "POST", {"ממשק": "github", "נתיב": "/repos/adico1/sulha-site/contents/main.py", "שיטה": "GET"})
-    main_ת = main_gh.get("תגובה", main_gh) if isinstance(main_gh, dict) else main_gh
-    if isinstance(main_ת, dict) and main_ת.get("content"):
-        main_קוד = base64.b64decode(main_ת["content"]).decode("utf-8")
-        sha = main_ת.get("sha")
-        # מצא עצמי
-        for i, ש in enumerate(main_קוד.split(chr(10))):
-            if "עצמי" in ש and "שורש" in ש and "פעולות" in ש:
-                הדפס(f"מצא עצמי שורה {i+1}", ש.strip())
-                # תקן
-                חדש = ש.replace('פעולות={"שורש": ("/", "GET")}', 'פעולות={"צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"), "שעה": ("/api/%D7%A9%D7%A2%D7%94", "GET")}')
-                if חדש != ש:
-                    main_קוד = main_קוד.replace(ש, חדש, 1)
-                    הדפס("תוקן עצמי", "צופה JSON במקום HTML")
-            if "עצמי" in ש and "הפעל" not in ש and "if ש" in ש:
-                הדפס(f"מצא if עצמי שורה {i+1}", ש.strip())
-                main_קוד = main_קוד.replace(ש, ש.replace('if ש != "עצמי": ', ''), 1)
-                הדפס("תוקן עצמי פעיל", "מופעל")
-
-        # שלח main.py מתוקן ל-GitHub
-        b64 = base64.b64encode(main_קוד.encode("utf-8")).decode("ascii")
-        d = {"message": "אברהם תיקן עצמי", "content": b64, "sha": sha}
-        import tempfile
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            json.dump(d, f)
-            tmp = f.name
-        r = _sp.run(["gh", "api", "repos/adico1/sulha-site/contents/main.py", "-X", "PUT", "--input", tmp, "--jq", ".content.name"], capture_output=True, text=True)
-        הדפס("דחף main.py מתוקן", r.stdout.strip() or r.stderr.strip()[:100])
-
-        # pull + restart
-        _sp.run(["git", "pull", "--rebase"], capture_output=True, text=True, cwd=_שורש)
-
-    # בדוק
-    import time as _t
-    _t.sleep(3)
-    צפה2 = ראה()
-    if isinstance(צפה2, dict):
-        for שם, מ in צפה2.get("פנים", {}).items():
-            הדפס(f"  {שם}", f"{'✓' if מ.get('מחובר') else '✗'}")
+    import os as _os
+    _main = _os.path.join(_שורש, "main.py")
+    with open(_main, "r", encoding="utf-8") as f:
+        קוד = f.read()
+    שינוי = False
+    if '"שורש": ("/", "GET")' in קוד:
+        קוד = קוד.replace('"שורש": ("/", "GET")', '"צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"), "שעה": ("/api/%D7%A9%D7%A2%D7%94", "GET")')
+        שינוי = True
+        הדפס("תוקן", "עצמי צופה JSON")
+    if 'if ש != "עצמי": מ.הפעל(60)' in קוד:
+        קוד = קוד.replace('if ש != "עצמי": מ.הפעל(60)', 'מ.הפעל(60)')
+        שינוי = True
+        הדפס("תוקן", "עצמי מופעל")
+    if שינוי:
+        with open(_main, "w", encoding="utf-8") as f:
+            f.write(קוד)
+        הדפס("צבאות", בקש("/api/צבאות"))
 
 
 def צפה_עד_שלם():
