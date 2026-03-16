@@ -432,6 +432,7 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         elif נ == "/api/ספרים": self._json({"אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()})
         elif נ == "/api/עולמות": self._json(עולמות)
         elif נ == "/api/צבאות": self._json(בקר_ראשי.צבאות())
+        elif נ == "/api/שעה": self._json({"שעה": datetime.now().isoformat(), "יום_הולדת_יקום": datetime.now().strftime("%H:%M:%S.%f")[:-3]})
         elif נ.startswith("/api/ממשק/"):
             ח = נ.split("/")
             if len(ח) >= 5 and ח[3] in בקר_ראשי.ממשקים: self._json(בקר_ראשי.ממשקים[ח[3]].עשה(ח[4]))
