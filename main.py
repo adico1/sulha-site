@@ -219,6 +219,63 @@ class בקר:
         for שם, מ in self.ממשקים.items():
             if שם != "עצמי":
                 מ.הפעל(60)
+        # חולל אברם ואבם אוטומטית
+        self.חולל("אברם", f"http://localhost:{פורט_http}",
+            פעולות={"צפה": (f"/api/%D7%A6%D7%A4%D7%94", "GET"),
+                     "מצב": (f"/api/%D7%9E%D7%A6%D7%91", "GET"),
+                     "רוגזים": (f"/api/%D7%A8%D7%95%D7%92%D7%96%D7%99%D7%9D", "GET"),
+                     "מחולל": (f"/api/%D7%9E%D7%97%D7%95%D7%9C%D7%9C", "GET"),
+                     "ספרים": (f"/api/%D7%A1%D7%A4%D7%A8%D7%99%D7%9D", "GET")},
+            מרווח=30)
+        self.חולל("אבם", f"http://localhost:{פורט_http}",
+            פעולות={"github": (f"/api/%D7%9E%D7%9E%D7%A9%D7%A7/github/%D7%A1%D7%98%D7%98%D7%95%D7%A1", "GET"),
+                     "קבצים": (f"/api/%D7%A7%D7%91%D7%A6%D7%99%D7%9D", "GET"),
+                     "עולמות": (f"/api/%D7%A2%D7%95%D7%9C%D7%9E%D7%95%D7%AA", "GET")},
+            מרווח=60)
+        # צופה קבצים + צבאות אוטומטי
+        threading.Thread(target=self._צופה_צבאות, daemon=True).start()
+
+    def צבאות(self):
+        """מעדכן הכל בצבאות - git add + commit + push בזמן ריצה"""
+        אברהם_ליבה.רשום("צבאות", "התחלה", "שינוי")
+        תוצאות = []
+        try:
+            for cmd in [["git", "add", "-A"],
+                        ["git", "commit", "-m", f"צבאות {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"],
+                        ["git", "push"]]:
+                r = subprocess.run(cmd, capture_output=True, text=True, timeout=30, cwd=str(שורש))
+                תוצאות.append({"פקודה": cmd[-1], "ok": r.returncode == 0})
+            אברהם_ליבה.רשום("צבאות", f"סיום:{len(תוצאות)}", "ענה")
+        except Exception as e:
+            אברהם_ליבה.רשום("צבאות", f"רוגז:{e}", "שינוי")
+        return תוצאות
+
+    def _צופה_צבאות(self):
+        """צופה שינויי קבצים - דוחף צבאות אוטומטית כל 30 שניות אם יש שינוי"""
+        mtimes = {}
+        while True:
+            time.sleep(30)
+            שינוי = False
+            for ק in קבצים():
+                try:
+                    mt = (שורש / ק).stat().st_mtime
+                    if ק in mtimes and mt != mtimes[ק]:
+                        שינוי = True
+                        אבם.רשום("צופה-קבצים", f"שינוי:{ק}", "שינוי")
+                    mtimes[ק] = mt
+                except:
+                    pass
+            if שינוי:
+                self.צבאות()
+            # שמור ספרים
+            try:
+                with open(שורש / "שלשה_ספרים.ספר", "w", encoding="utf-8") as f:
+                    f.write(f"שלשה ספרים · {{מי}}/{{מה}} · {datetime.now().isoformat()}\n═══\n")
+                    f.write(json.dumps({"אבם": {"ספר": אבם.ספר[-50:], "תגובות": אבם.ספר2[-50:], "שינויים": אבם.ספור[-50:]},
+                        "אברם": {"ספר": אברם.ספר[-50:]}, "אברהם": {"ספר": אברהם_ליבה.ספר[-50:], "שינויים": אברהם_ליבה.ספור[-50:]}
+                    }, ensure_ascii=False, indent=2))
+            except:
+                pass
 
 בקר_ראשי = בקר()
 
@@ -451,6 +508,9 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
                     self._json(בקר_ראשי.ממשקים[שם].צפה())
                 else:
                     self._json({"שגיאה": f"ממשק '{שם}' לא קיים"})
+
+        elif נ == "/api/צבאות":
+            self._json(בקר_ראשי.צבאות())
 
         # catch all
         else:
