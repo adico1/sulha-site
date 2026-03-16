@@ -208,7 +208,7 @@ def ראשי():
 
     # קרא לוג שיחה
     לוגים = _glob.glob(str(Path.home() / ".claude/projects/-Users-adicohen-------------/*.jsonl"))
-    בקשות_לוג = []
+    בקשות_לוג = [בק.get("מה", "") for בק in ב]
     if לוגים:
         with open(לוגים[0], "r") as f:
             for line in f:
