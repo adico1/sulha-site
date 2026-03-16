@@ -415,6 +415,7 @@ ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"){{con
 # WebSocket
 # ══════════════════════════════════════
 
+_ws_event_loop = None
 ws_מחוברים = set()
 ws_hash = {}
 
@@ -506,9 +507,10 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
                            "אברהם": {"ספר": len(אברהם.ספר), "שינויים": len(אברהם.ספור)}},
                 "רוגזים": {"אבם": אבם.ספור[-5:], "אברהם": אברהם.ספור[-5:]}
             }}, ensure_ascii=False)
-            for ws in list(ws_מחוברים):
-                try: ws.send(הודעה)
-                except: pass
+            try:
+                for ws in list(ws_מחוברים):
+                    asyncio.run_coroutine_threadsafe(ws.send(הודעה), _ws_event_loop)
+            except: pass
         except: pass
 
     def do_OPTIONS(self): self._json({})
@@ -656,6 +658,8 @@ def main():
         def _ws():
             asyncio.run(_ws_main())
         async def _ws_main():
+            global _ws_event_loop
+            _ws_event_loop = asyncio.get_event_loop()
             async with websockets.serve(ws_טפל, "0.0.0.0", פורט_ws):
                 print(f"[ws] ws://localhost:{פורט_ws}")
                 await ws_צופה()
