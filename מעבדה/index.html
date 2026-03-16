@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="UTF-8">
+<title>מעבדה</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:monospace;background:#111;color:#0f0;padding:10px;font-size:13px}
+#שוכן{background:#000;border:1px solid #0f0;padding:10px;min-height:200px;margin:10px 0;white-space:pre-wrap}
+input,button{font-family:monospace;background:#000;color:#0f0;border:1px solid #0f0;padding:6px 12px;margin:2px}
+button:hover{background:#0f0;color:#000}
+.log{color:#666;font-size:11px}
+</style></head><body>
+
+<div>שם: <input id="שם" value="צופה1"> <button onclick="הרשם()">הרשם</button></div>
+<div>שלח: <input id="מה" value="*"> שוכן: <input id="שוכן" value="שלום"> <button onclick="שלח()">שלח</button></div>
+<div id="שוכן"></div>
+<div id="לוג"></div>
+
+<script>
+let ws;
+
+function חבר() {
+    ws = new WebSocket("ws://localhost:8780");
+    ws.onopen = () => לוג("מחובר");
+    ws.onclose = () => { לוג("נותק"); setTimeout(חבר, 3000) };
+    ws.onmessage = e => {
+        const d = JSON.parse(e.data);
+        document.getElementById("שוכן").textContent = d.שוכן || "";
+        לוג(d.מי + "/" + d.מה + ": " + (d.שוכן||"").substring(0,100));
+    };
+}
+
+function הרשם() {
+    ws.send(JSON.stringify({ מי: document.getElementById("שם").value, מה: "רישום" }));
+}
+
+function שלח() {
+    ws.send(JSON.stringify({
+        מי: document.getElementById("שם").value,
+        מה: "broadcast",
+        אל: document.getElementById("מה").value,
+        שוכן: document.getElementById("שוכן").value
+    }));
+}
+
+function לוג(ט) {
+    const el = document.getElementById("לוג");
+    el.innerHTML = '<div class="log">' + new Date().toLocaleTimeString() + " " + ט + "</div>" + el.innerHTML;
+    if (el.children.length > 50) el.lastChild.remove();
+}
+
+חבר();
+</script></body></html>
