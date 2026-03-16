@@ -120,8 +120,9 @@ def בקשות_אדי():
     # חפש בכל המקומות האפשריים
     נתיבים = [
         str(Path.home() / ".claude/projects/-Users-adicohen-------------/*.jsonl"),
-        str(Path.home() / ".claude/projects/-Users-adicohen-------------/**/*.jsonl"),
-        str(Path.home() / ".claude/projects/-Users-adicohen-------------/**/messages.jsonl"),
+        str(Path.home() / ".claude/projects/-Users-adicohen--------------/*.jsonl"),
+        str(Path.home() / ".claude/projects/*יוצאים*/*.jsonl"),
+        str(Path.home() / ".claude/projects/**/*.jsonl"),
     ]
     כל_בקשות = []
     for תבנית in נתיבים:
