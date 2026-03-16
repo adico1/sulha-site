@@ -137,21 +137,71 @@ def בקשות_אדי():
 
 def ראשי():
     הרשם()
-    # כל בקשה נפרדת → אברהם שולח מיד ל-WebSocket → הצפה רואה כל צעד
-    צפה()
-    מצב()
-    רוגזים()
-    מחולל()
-    ספרים()
-    שעה()
-    # שלח את כל בקשות אדי כהן לאברהם
-    כל = בקשות_אדי()
-    בקש("/api/חולל", "POST", {
-        "שם": f"בקשות/אדי/{len(כל)}",
-        "בסיס": במה,
-        "פעולות": {"צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET")},
-        "מרווח": 30
-    })
+    צ = צפה()
+    ס = ספרים()
+    ר = רוגזים()
+    מ = מחולל()
+    ש = שעה()
+    ב = בקשות_אדי()
+
+    # צור מבנה תיקיות {מי}/{מה}
+    import os as _os
+    בסיס = str(Path(__file__).parent / "צפה")
+    _os.makedirs(בסיס, exist_ok=True)
+
+    # ליבות
+    for ל in ["אבם", "אברם", "אברהם"]:
+        _os.makedirs(f"{בסיס}/{ל}", exist_ok=True)
+        נתוני_ל = (צ or {}).get(ל, {})
+        with open(f"{בסיס}/{ל}/צפה.json", "w", encoding="utf-8") as f:
+            json.dump(נתוני_ל, f, ensure_ascii=False, indent=2)
+
+    # ממשקים
+    _os.makedirs(f"{בסיס}/ממשקים", exist_ok=True)
+    for שם, ממ in (צ or {}).get("פנים", {}).items():
+        with open(f"{בסיס}/ממשקים/{שם}.json", "w", encoding="utf-8") as f:
+            json.dump(ממ, f, ensure_ascii=False, indent=2)
+
+    # בנים
+    _os.makedirs(f"{בסיס}/בנים", exist_ok=True)
+    if isinstance(מ, dict):
+        for שם, בן in מ.items():
+            שם_בטוח = שם.replace("/", "_")
+            with open(f"{בסיס}/בנים/{שם_בטוח}.json", "w", encoding="utf-8") as f:
+                json.dump(בן, f, ensure_ascii=False, indent=2)
+
+    # ספרים
+    _os.makedirs(f"{בסיס}/ספרים", exist_ok=True)
+    if isinstance(ס, dict):
+        for שם, נ in ס.items():
+            with open(f"{בסיס}/ספרים/{שם}.json", "w", encoding="utf-8") as f:
+                json.dump(נ, f, ensure_ascii=False, indent=2)
+
+    # רוגזים
+    _os.makedirs(f"{בסיס}/רוגזים", exist_ok=True)
+    if isinstance(ר, dict):
+        for שם, נ in ר.items():
+            with open(f"{בסיס}/רוגזים/{שם}.json", "w", encoding="utf-8") as f:
+                json.dump(נ, f, ensure_ascii=False, indent=2)
+
+    # עולמות
+    _os.makedirs(f"{בסיס}/עולמות", exist_ok=True)
+    for שם, ע in (צ or {}).get("עולמות", {}).items():
+        with open(f"{בסיס}/עולמות/{שם}.json", "w", encoding="utf-8") as f:
+            json.dump(ע, f, ensure_ascii=False, indent=2)
+
+    # בקשות אדי
+    _os.makedirs(f"{בסיס}/בקשות", exist_ok=True)
+    with open(f"{בסיס}/בקשות/אדי.json", "w", encoding="utf-8") as f:
+        json.dump(ב, f, ensure_ascii=False, indent=2)
+
+    # שעה
+    with open(f"{בסיס}/שעה.json", "w", encoding="utf-8") as f:
+        json.dump(ש, f, ensure_ascii=False, indent=2)
+
+    # צפה מלאה
+    with open(f"{בסיס}/צפה.json", "w", encoding="utf-8") as f:
+        json.dump(צ, f, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
