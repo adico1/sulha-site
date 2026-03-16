@@ -51,8 +51,7 @@ class ליבה:
         with self._נ:
             ר = {"מי": f"{self.שם}/{מי}", "מה": מה, "כ": כ, "מתי": datetime.now().isoformat()}
             (self.ספר if כ == "בקש" else self.ספר2 if כ == "ענה" else self.ספור).append(ר)
-            for ס in [self.ספר, self.ספר2, self.ספור]:
-                if len(ס) > 500: del ס[:250]
+            # אף פעם לא מוחק - append only
 
     def צפה(self):
         return {"שם": self.שם, "אב": self.אב,
@@ -211,7 +210,7 @@ class בקר:
             if שינוי: self.צבאות()
             # שמור ספרים
             try:
-                with open(os.path.join(שורש, "שלשה_ספרים.ספר"), "w", encoding="utf-8") as f:
+                with open(os.path.join(שורש, "שלשה_ספרים.ספר"), "a", encoding="utf-8") as f:
                     f.write(f"שלשה ספרים · {{מי}}/{{מה}} · {datetime.now().isoformat()}\n═══\n")
                     f.write(json.dumps({"אבם": {"ספר": אבם.ספר, "תגובות": אבם.ספר2, "שינויים": אבם.ספור},
                         "אברם": {"ספר": אברם.ספר}, "אברהם": {"ספר": אברהם.ספר, "שינויים": אברהם.ספור}
