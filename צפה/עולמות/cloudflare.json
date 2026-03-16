@@ -1,0 +1,5 @@
+{
+  "פנימי": "cloudflare",
+  "חיצוני": "https://api.cloudflare.com/client/v4",
+  "סוג": "חוץ"
+}
