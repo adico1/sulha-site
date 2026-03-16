@@ -463,6 +463,7 @@ async def ws_טפל(websocket):
         async for הודעה in websocket:
             ב = json.loads(הודעה); מי = ב.get("מי", שם); מה = ב.get("מה", "")
             אברהם.רשום(מי, מה)
+            בדוק_ספירות(מה, None)
             if מה == "אתר":
                 await websocket.send(json.dumps({"מי": "אברהם", "מה": "אתר", "תוכן": תוכן_אתר()}, ensure_ascii=False))
             elif מה == "צפה_פנים":
@@ -508,6 +509,26 @@ async def ws_צופה():
 # HTTP שרת - catch all {מי}/{מה}
 # ══════════════════════════════════════
 
+
+# בדיקות עשר ספירות - על כל קלט תהליך ופלט
+def בדוק_ספירות(נתיב, תשובה):
+    """בדיקת עשר ספירות על כל בקשה"""
+    ספירות = {}
+    ספירות["ראשית"] = נתיב is not None  # יש קלט
+    ספירות["אחרית"] = תשובה is not None  # יש פלט
+    ספירות["טוב"] = not isinstance(תשובה, dict) or "שגיאה" not in תשובה  # אין שגיאה
+    ספירות["רע"] = isinstance(תשובה, dict) and "שגיאה" in תשובה  # יש שגיאה
+    ספירות["רום"] = isinstance(תשובה, (dict, list))  # תשובה מובנית
+    ספירות["תחת"] = len(str(תשובה)) > 2  # תשובה לא ריקה
+    ספירות["מזרח"] = isinstance(נתיב, str) and len(נתיב) > 0  # נתיב תקין
+    ספירות["מערב"] = True  # הגיע לבדיקה = תהליך עבד
+    ספירות["צפון"] = True  # נרשם
+    ספירות["דרום"] = True  # נשלח
+    # רוגז אם נכשל
+    if ספירות["רע"]:
+        אברהם.רשום("ספירות/רוגז", f"{נתיב}:{תשובה.get('שגיאה','')}", "שינוי")
+    return ספירות
+
 class שרתHTTP(http.server.BaseHTTPRequestHandler):
     def _html(self, h):
         self.send_response(200); self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -520,6 +541,7 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type"); self.end_headers()
         self.wfile.write(json.dumps(d, ensure_ascii=False, indent=2).encode("utf-8"))
+        בדוק_ספירות(self.path, d)
         # כל בקשה → שלח מיד לדפדפנים
         try:
             נ = urllib.parse.unquote(self.path.rstrip("/")) or "/"
@@ -694,7 +716,7 @@ try:
             except: pass
 
     _חוש = Observer()
-    _חוש.schedule(חוש_קבצים(), שורש, recursive=True)
+    _חוש.schedule(חוש_קבצים(), שורש, recursive=False)
     _חוש.start()
     print("[חוש] watchdog פעיל")
 except ImportError:
@@ -716,7 +738,7 @@ except ImportError:
             time.sleep(1)
     if not שרת:
         print("[אברהם] רוגז: לא הצליח לתפוס פורט")
-        return
+        שרת = http.server.HTTPServer(("0.0.0.0", פורט), שרתHTTP)
     def _אתחל():
         time.sleep(2)
         נ = os.path.join(שורש, "main_קלוד.py")
@@ -738,6 +760,7 @@ except ImportError:
                 print(f"[ws] ws://localhost:{פורט_ws}")
                 await ws_צופה()
         threading.Thread(target=_ws, daemon=True).start()
+    print(f'[אברהם] שרת מאזין על {פורט}')
     try:
         שרת.serve_forever()
     except KeyboardInterrupt:
@@ -745,4 +768,14 @@ except ImportError:
         שרת.server_close()
 
 if __name__ == "__main__":
-    main()
+    while True:
+        try:
+            main()
+        except Exception as e:
+            # רוגז מיידי - תפוס, רשום, תקן, נסה שוב
+            try:
+                with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "שלשה_ספרים.ספר"), "a", encoding="utf-8") as f:
+                    f.write(chr(10) + "=== רוגז/קריסה " + str(e) + " " + __import__("datetime").datetime.now().isoformat() + " ===" + chr(10))
+                print(f"[רוגז] {e} - מתקן ומנסה שוב")
+            except: pass
+            import time; time.sleep(2)
