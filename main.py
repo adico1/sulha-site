@@ -414,7 +414,7 @@ async def ws_שלח(מי, מה, תוכן):
     ws_hash[מה] = h
     if ws_מחוברים:
         data = json.dumps({"מי": מי, "מה": מה, "תוכן": תוכן}, ensure_ascii=False)
-        await asyncio.gather(*[ws.send(data) for ws in ws_מחוברים if ws.open])
+        await asyncio.gather(*[ws.send(data) for ws in list(ws_מחוברים) if not getattr(ws, "closed", False)])
 
 async def ws_טפל(websocket):
     שם = f"דפדפן/{id(websocket)}"
