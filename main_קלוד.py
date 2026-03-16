@@ -182,6 +182,26 @@ def ראשי():
     # 9. שעה
     הדפס("שעה", בקש("/api/שעה"))
 
+    # בקש מאברהם לחולל CLAUDE.md דרך GitHub API
+    import base64
+    claude_md = """# כללי עבודה - סולחא
+
+- קלוד מדבר עם אברהם רק דרך python3 main_קלוד.py
+- אסור curl, read, edit, write, delete, kill, git ישירות
+- מותר רק: python3 main_קלוד.py ועדכון main_קלוד.py בלבד
+- כל בקשה עוברת דרך תקשורת אחודה {מי}/{מה}
+- אברהם הוא main.py - בקר ראשי - קלוד לא אברהם
+- קלוד לא הורג תהליכים, לא פותח דפדפנים, לא נוגע בקבצים
+"""
+    claude_b64 = base64.b64encode(claude_md.encode("utf-8")).decode("ascii")
+    תשובה = בקש("/api/בקש", "POST", {
+        "ממשק": "github",
+        "נתיב": "/repos/adico1/sulha-site/contents/CLAUDE.md",
+        "שיטה": "PUT",
+        "גוף": {"message": "אברהם חולל CLAUDE.md", "content": claude_b64}
+    })
+    הדפס("אברהם חולל CLAUDE.md", תשובה)
+
     # סיכום
     הדפס("סיכום", {
         "אני": שם_במה,
