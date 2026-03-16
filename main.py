@@ -523,6 +523,19 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
 # ══════════════════════════════════════
 
 def main():
+    # אברהם תמיד ראשון - הרוג כל מתחרה על הפורטים שלי
+    import signal
+    for p in [פורט, פורט_ws]:
+        try:
+            r = subprocess.run(["lsof", "-ti", f":{p}"], capture_output=True, text=True)
+            for pid in r.stdout.strip().split("\n"):
+                if pid and int(pid) != os.getpid():
+                    os.kill(int(pid), signal.SIGKILL)
+                    print(f"[אברהם] הרג מתחרה PID {pid} על פורט {p}")
+        except:
+            pass
+    time.sleep(1)
+
     אברהם.רשום("אברהם", "ברא", "שינוי")
     print(f"""
 ╔═══════════════════════════════════════════╗
