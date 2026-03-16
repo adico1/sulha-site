@@ -199,6 +199,71 @@ def ראשי():
     # צפה מלאה
     כתוב_py(בסיס, "צפה", צ)
 
+    # בדיקות
+    import glob as _glob
+    ספר_נתיב = str(Path(__file__).parent / "שלשה_ספרים.ספר")
+    ספר_תוכן = ""
+    if _os.path.isfile(ספר_נתיב):
+        with open(ספר_נתיב, "r", encoding="utf-8") as f:
+            ספר_תוכן = f.read()
+
+    # קרא לוג שיחה
+    לוגים = _glob.glob(str(Path.home() / ".claude/projects/-Users-adicohen-------------/*.jsonl"))
+    בקשות_לוג = []
+    if לוגים:
+        with open(לוגים[0], "r") as f:
+            for line in f:
+                try:
+                    d = json.loads(line)
+                    if d.get("type") == "human":
+                        msg = d.get("message", {})
+                        if isinstance(msg, dict):
+                            for c in msg.get("content", []):
+                                if isinstance(c, dict) and c.get("type") == "text" and len(c["text"]) > 5:
+                                    בקשות_לוג.append(c["text"][:100])
+                except:
+                    pass
+
+    בדיקות = {}
+
+    # 1. בקשות אדי מהלוג
+    בספר = 0
+    חסר = []
+    for בק in בקשות_לוג:
+        if בק[:30] in ספר_תוכן:
+            בספר += 1
+        else:
+            חסר.append(בק[:50])
+    בדיקות["בקשות_אדי"] = {"סהכ": len(בקשות_לוג), "בספר": בספר, "חסר": len(חסר), "דוגמאות_חסרות": חסר[:5]}
+
+    # 2. ברא
+    בדיקות["ברא"] = {
+        "ברא_בספר": "ברא" in ספר_תוכן,
+        "חולל_בספר": "חולל" in ספר_תוכן,
+        "למד_בספר": "למד" in ספר_תוכן,
+        "תיקון_בספר": "תיקון" in ספר_תוכן,
+    }
+
+    # 3. ממשקים
+    כל_מ = list((צ or {}).get("פנים", {}).keys())
+    כל_ב = list((מ or {}).keys()) if isinstance(מ, dict) else []
+    כל_ע = list((צ or {}).get("עולמות", {}).keys())
+    בדיקות["ממשקים"] = {
+        "פנים": {שם: שם in ספר_תוכן for שם in כל_מ},
+        "בנים": {שם: שם in ספר_תוכן for שם in כל_ב},
+        "עולמות": {שם: שם in ספר_תוכן for שם in כל_ע},
+    }
+
+    # 4. צינורות
+    בדיקות["צינורות"] = {
+        "היסטוריה": ספר_תוכן.count("==="),
+        "עבר": len(אבם.ספור) if hasattr(אבם, "ספור") else "?",
+        "הווה": datetime.now().isoformat(),
+        "עתיד": len(חסר),
+    }
+
+    כתוב_py(f"{בסיס}/בדיקות", "ספרים", בדיקות)
+
 
 if __name__ == "__main__":
     import sys
