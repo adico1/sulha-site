@@ -118,7 +118,7 @@ def בקשות_אדי():
     """קרא את כל הבקשות של אדי כהן מלוג השיחה"""
     import glob
     # חפש בכל המקומות האפשריים
-    נתיבים = [str(Path.home() / ".claude/projects/-Users-adicohen-------------/c2f95ec6-a3ac-416f-a920-172a87273b6a.jsonl")]
+    נתיבים = [os.path.expanduser("~/.claude/projects/-Users-adicohen-------------/c2f95ec6-a3ac-416f-a920-172a87273b6a.jsonl")]
     כל_בקשות = []
     for תבנית in נתיבים:
         for לוג in glob.glob(תבנית, recursive=True):
