@@ -232,6 +232,10 @@ def ראשי():
 
 def כוון_אברהם():
     """כוון אברהם - כל הבקשה של אדי כהן"""
+    import base64, subprocess as _sp, tempfile
+    from pathlib import Path as _P
+    _שורש = str(_P(__file__).parent)
+
     הרשם()
 
     # הבט ראה חקור הבן
