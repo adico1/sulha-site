@@ -49,9 +49,13 @@ class ליבה:
 
     def רשום(self, מי, מה, כ="בקש"):
         with self._נ:
+            מפתח = f"{self.שם}/{מי}:{מה}:{כ}"
+            # בדוק כפילות - לא רושם אותו דבר פעמיים
+            dest = self.ספר if כ == "בקש" else self.ספר2 if כ == "ענה" else self.ספור
+            if dest and dest[-1].get("מי") == f"{self.שם}/{מי}" and dest[-1].get("מה") == מה and dest[-1].get("כ") == כ:
+                return  # כפילות
             ר = {"מי": f"{self.שם}/{מי}", "מה": מה, "כ": כ, "מתי": datetime.now().isoformat()}
-            (self.ספר if כ == "בקש" else self.ספר2 if כ == "ענה" else self.ספור).append(ר)
-            # אף פעם לא מוחק - append only
+            dest.append(ר)
 
     def צפה(self):
         return {"שם": self.שם, "אב": self.אב,
