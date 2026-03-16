@@ -116,33 +116,21 @@ def כוון():
 
 def בקשות_אדי():
     """קרא את כל הבקשות של אדי כהן מלוג השיחה"""
-    import glob
-    # חפש בכל המקומות האפשריים
-    נתיבים = [os.path.expanduser("~/.claude/projects/-Users-adicohen-------------/c2f95ec6-a3ac-416f-a920-172a87273b6a.jsonl")]
+    לוג = os.path.expanduser("~/.claude/projects/-Users-adicohen-------------/c2f95ec6-a3ac-416f-a920-172a87273b6a.jsonl")
     כל_בקשות = []
-    for תבנית in נתיבים:
-        for לוג in glob.glob(תבנית, recursive=True):
-            with open(לוג, "r") as f:
-                for line in f:
-                    try:
-                        d = json.loads(line)
-                        # פורמט claude: type=user, message={content:[{type:text,text:...}]}
-                        if d.get("type") == "user" or d.get("type") == "human" or d.get("role") == "user":
-                            msg = d.get("message", d.get("content", d))
-                            if isinstance(msg, str) and len(msg) > 5:
-                                כל_בקשות.append({"מי": "אדי", "מה": msg[:500]})
-                            elif isinstance(msg, dict):
-                                for c in msg.get("content", []):
-                                    if isinstance(c, dict) and c.get("type") == "text" and len(c.get("text", "")) > 5:
-                                        כל_בקשות.append({"מי": "אדי", "מה": c["text"][:500]})
-                                    elif isinstance(c, str) and len(c) > 5:
-                                        כל_בקשות.append({"מי": "אדי", "מה": c[:500]})
-                            elif isinstance(msg, list):
-                                for c in msg:
-                                    if isinstance(c, dict) and c.get("type") == "text" and len(c.get("text", "")) > 5:
-                                        כל_בקשות.append({"מי": "אדי", "מה": c["text"][:500]})
-                    except:
-                        pass
+    if os.path.isfile(לוג):
+        with open(לוג, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    d = json.loads(line)
+                    if d.get("type") == "user":
+                        msg = d.get("message", {})
+                        if isinstance(msg, dict):
+                            for c in msg.get("content", []):
+                                if isinstance(c, dict) and c.get("type") == "text" and len(c.get("text", "")) > 5:
+                                    כל_בקשות.append({"מי": "אדי", "מה": c["text"][:500]})
+                except:
+                    pass
     return כל_בקשות
 
 
