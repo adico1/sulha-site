@@ -556,7 +556,7 @@ def main():
             print(f"[אברהם] למד main_קלוד.py: {ש} שורות")
         webbrowser.open(f"http://localhost:{פורט}/")
         time.sleep(1)
-        webbrowser.open(f"http://localhost:{פורט}/ניהול")
+        webbrowser.open(f"http://localhost:{פורט}/%D7%A0%D7%99%D7%94%D7%95%D7%9C")
         print("[אברהם] 2 טאבים קבועים נפתחו")
     threading.Thread(target=_אתחל, daemon=True).start()
     if WS:
