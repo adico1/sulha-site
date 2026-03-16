@@ -303,7 +303,14 @@ def ראשי():
 
     # דיבוג לוג - איפה הקבצים
     כל_jsonl = _glob.glob(str(Path.home() / ".claude/**/*.jsonl"), recursive=True)
-    כתוב_py(f"{בסיס}/בדיקות", "לוג_נתיבים", {"נתיבים": כל_jsonl[:20], "סהכ": len(כל_jsonl)})
+    # מצא לוג שיחה זו לפי תיקיית הפרויקט
+    import glob as _g2
+    לוג_פרויקט = _g2.glob(str(Path.home() / ".claude/projects/-Users-adicohen-------------/**"), recursive=True)
+    כתוב_py(f"{בסיס}/בדיקות", "לוג_נתיבים", {
+        "פרויקט": [ל for ל in לוג_פרויקט if not "/." in ל][:30],
+        "סהכ_jsonl": len(כל_jsonl),
+        "בקשות_נמצאו": len(בקשות_לוג)
+    })
 
 
 if __name__ == "__main__":
