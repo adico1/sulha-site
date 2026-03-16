@@ -383,13 +383,23 @@ header{{background:#16213e;padding:10px 20px;display:flex;justify-content:space-
 <script>let ws,lH="";
 function draw(d){{const ת=d.תוכן||{{}};const ל=ת.ליבה||{{}};const פ=ת.פנים||{{}};const ב=ת.בנים||{{}};
 let h='<div class="g3">';for(const n of["אבם","אברם","אברהם"]){{const x=ת[n]||{{}};const s=x.ספר||{{}};
-h+=`<div class="bx"><div class="bt">${{n}}</div><div class="sm">אב: ${{x.אב||"שורש"}}</div><div class="sm">בקש:${{s.בקשות||0}} ענה:${{s.תגובות||0}} שינוי:${{s.שינויים||0}}</div></div>`}}
+h+=`<div class="bx"><div class="bt">${{n}}</div><div class="sm">אב: ${{x.אב||"שורש"}}</div><div class="sm">בקש:${{s.בקשות||s.ספר||0}} ענה:${{s.תגובות||0}} שינוי:${{s.שינויים||0}}</div></div>`}}
 h+='</div><div class="g3">';h+=`<div class="bx"><div class="bt">ממשקים</div><div class="bn">${{ל.ממשקים||0}}</div></div>`;
 h+=`<div class="bx"><div class="bt">בנים</div><div class="bn">${{ל.בנים||0}}</div></div>`;
 h+=`<div class="bx"><div class="bt">רוגזים</div><div class="bn">${{ל.רוגזים||0}}</div></div>`;h+='</div>';
-if(Object.keys(פ).length){{h+='<h3>ממשקים</h3>';for(const[n,m] of Object.entries(פ)){{h+=`<div class="rw"><div><span class="נ ${{m.מחובר?"g":"r"}}"></span><b>${{n}}</b></div><div class="sm">צפיות:${{m.צפיות||0}} רוגזים:${{m.רוגזים||0}} פעולות:${{(m.פעולות||[]).join(",")}}</div></div>`}}}}
-if(Object.keys(ב).length){{h+='<h3>צופים בנים</h3>';for(const[n,b] of Object.entries(ב)){{h+=`<div class="rw"><div><span class="נ ${{b.מחובר?"g":"o"}}"></span>${{n}}</div><div class="sm">צפיות:${{b.צפיות||0}}</div></div>`}}}}
-const ע=ת.עולמות||{{}};if(Object.keys(ע).length){{h+='<h3>עולמות</h3>';for(const[n,w] of Object.entries(ע)){{h+=`<div class="rw"><div><b>${{n}}</b></div><div class="sm">${{w.פנימי}} → ${{w.חיצוני}}</div></div>`}}}}
+
+h+=`<div class="bx" style="text-align:right"><div class="bt">שעה</div><div class="bn">${{ת.שעה||"?"}}</div></div>`;
+
+if(Object.keys(פ).length){{h+='<h3>ממשקים</h3>';for(const[n,m] of Object.entries(פ)){{h+=`<div class="rw"><div><span class="נ ${{m.מחובר?"g":"r"}}"></span><b>${{n}}</b></div><div class="sm">צפיות:${{m.צפיות||0}} רוגזים:${{m.רוגזים||0}} פעיל:${{m.פעיל}} פעולות:${{(m.פעולות||[]).join(",")}}</div></div>`}}}}
+if(Object.keys(ב).length){{h+='<h3>צופים בנים</h3>';for(const[n,b] of Object.entries(ב)){{h+=`<div class="rw"><div><span class="נ ${{b.מחובר?"g":"o"}}"></span>${{n}}</div><div class="sm">צפיות:${{b.צפיות||0}} פעיל:${{b.פעיל}}</div></div>`}}}}
+const ע=ת.עולמות||{{}};if(Object.keys(ע).length){{h+='<h3>עולמות</h3>';for(const[n,w] of Object.entries(ע)){{h+=`<div class="rw"><div><b>${{n}}</b></div><div class="sm">${{w.פנימי||""}} → ${{w.חיצוני||""}} (${{w.סוג||""}})</div></div>`}}}}
+
+const ס=ת.ספרים||{{}};if(Object.keys(ס).length){{h+='<h3>ספרים</h3>';for(const[n,v] of Object.entries(ס)){{h+=`<div class="rw"><div class="c">${{n}}</div><div class="sm">${{JSON.stringify(v)}}</div></div>`}}}}
+
+const ר=ת.רוגזים||{{}};let רסהכ=0;for(const[n,v] of Object.entries(ר)){{if(Array.isArray(v))רסהכ+=v.length}};
+if(רסהכ>0){{h+='<h3>רוגזים ('+רסהכ+')</h3>';for(const[n,v] of Object.entries(ר)){{if(Array.isArray(v))for(const x of v.slice(-5)){{h+=`<div class="rw" style="background:#200"><div class="sm">${{x.מי||""}} ${{x.מה||""}}</div><div class="sm">${{(x.מתי||"").slice(-8)}}</div></div>`}}}}}}
+
+if(ת.נתיב){{h+='<h3>בקשה אחרונה</h3><div class="rw"><div class="c">'+ת.נתיב+'</div><div class="sm">'+ת.שעה+'</div></div>'}}
 document.getElementById("ת").innerHTML=h}}
 function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נורה").className="נ g";document.getElementById("סט").textContent="מחובר"}};
@@ -483,6 +493,21 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type"); self.end_headers()
         self.wfile.write(json.dumps(d, ensure_ascii=False, indent=2).encode("utf-8"))
+        # כל בקשה → שלח מיד לדפדפנים
+        try:
+            נ = urllib.parse.unquote(self.path.rstrip("/")) or "/"
+            הודעה = json.dumps({"מי": "אברהם", "מה": "בקשה", "תוכן": {
+                "נתיב": נ, "שעה": datetime.now().isoformat(), "תשובה": d,
+                **בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה(),
+                "ספרים": {"אבם": {"ספר": len(אבם.ספר), "תגובות": len(אבם.ספר2), "שינויים": len(אבם.ספור)},
+                           "אברם": {"ספר": len(אברם.ספר)},
+                           "אברהם": {"ספר": len(אברהם.ספר), "שינויים": len(אברהם.ספור)}},
+                "רוגזים": {"אבם": אבם.ספור[-5:], "אברהם": אברהם.ספור[-5:]}
+            }}, ensure_ascii=False)
+            for ws in list(ws_מחוברים):
+                try: ws.send(הודעה)
+                except: pass
+        except: pass
 
     def do_OPTIONS(self): self._json({})
 
