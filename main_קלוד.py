@@ -118,26 +118,7 @@ def בקשות_אדי():
     """קרא את כל הבקשות של אדי כהן מלוג השיחה"""
     import glob
     # חפש בכל המקומות האפשריים
-    # חפש לוג בכל מקום אפשרי
-    import glob as _g
-    נתיבים = _g.glob(str(Path.home() / ".claude/**/*.jsonl"), recursive=True)
-    # סנן לפי גודל (שיחה ארוכה = קובץ גדול) ולפי תוכן
-    נתיבים_מסוננים = []
-    for _נ in נתיבים:
-        try:
-            _גודל = _os.path.getsize(_נ)
-            if _גודל > 100000:  # רק קבצים גדולים
-                with open(_נ, "r") as _f:
-                    for _line in _f:
-                        try:
-                            _d = json.loads(_line)
-                            if "יוצאים" in str(_d.get("cwd", "")) or "סולחא" in str(_d.get("message", "")):
-                                נתיבים_מסוננים.append(_נ)
-                                break
-                        except: pass
-                        break  # בדוק רק שורה ראשונה
-        except: pass
-    נתיבים = נתיבים_מסוננים if נתיבים_מסוננים else []
+    נתיבים = [str(Path.home() / ".claude/projects/-Users-adicohen-------------/c2f95ec6-a3ac-416f-a920-172a87273b6a.jsonl")]
     כל_בקשות = []
     for תבנית in נתיבים:
         for לוג in glob.glob(תבנית, recursive=True):
