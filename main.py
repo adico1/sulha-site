@@ -492,7 +492,7 @@ async def ws_טפל(websocket):
 async def ws_צופה():
     # צופה - ממתין לפוטנציאל מבקשות
     while True:
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)  # ממתין לפוטנציאל
         if ws_מחוברים:
             await ws_שלח("אברהם", "צפה_פנים",
                 {**בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה(),
@@ -674,6 +674,32 @@ def main():
 ╚═══════════════════════════════════════════╝
 """)
     בקר_ראשי.הפעל()
+
+# חוש - watchdog צופה מערכת קבצים בזמן אמת
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+
+    class חוש_קבצים(FileSystemEventHandler):
+        def on_any_event(self, event):
+            אברהם.רשום("חוש/קבצים", f"{event.event_type}:{event.src_path}", "שינוי")
+            # רוגז על כמות גדולה של קבצים
+            try:
+                הודעה = json.dumps({"מי": "חוש", "מה": "קובץ", "תוכן": {
+                    "סוג": event.event_type, "נתיב": event.src_path,
+                    "שעה": datetime.now().isoformat()
+                }}, ensure_ascii=False)
+                for ws in list(ws_מחוברים):
+                    asyncio.run_coroutine_threadsafe(ws.send(הודעה), _ws_event_loop)
+            except: pass
+
+    _חוש = Observer()
+    _חוש.schedule(חוש_קבצים(), שורש, recursive=True)
+    _חוש.start()
+    print("[חוש] watchdog פעיל")
+except ImportError:
+    print("[חוש] watchdog לא מותקן")
+
     # retry bind - לעולם לא יכשל
     שרת = None
     for _ in range(20):
