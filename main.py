@@ -290,14 +290,71 @@ updateUI();addView('hutz');
 </script></body></html>'''
 
 
+def שעון_js():
+    """שעון חי + מכריעים - משותף לכל צפה"""
+    return '''
+<div id="שעון-מיכל" style="position:fixed;bottom:8px;left:8px;background:rgba(0,0,0,.85);color:#e8d9b0;padding:8px 14px;border-radius:8px;font-family:monospace;font-size:.85em;z-index:9999;border:1px solid #333">
+<div id="שעון">00:00:00.000</div>
+<div id="רוגז-שעון" style="color:#c0392b;font-size:.7em;display:none"></div>
+<div id="מכריעים" style="display:none;margin-top:6px;font-size:.75em">
+<button onclick="מכריע('תקן')" style="background:#27ae60;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">תקן</button>
+<button onclick="מכריע('רגוז')" style="background:#c0392b;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">רגוז</button>
+<button onclick="מכריע('שתוק')" style="background:#666;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">שתוק</button>
+<button onclick="מכריע('שחוק')" style="background:#f39c12;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">שחוק</button>
+<button onclick="מכריע('הרהר')" style="background:#3498db;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">הרהר</button>
+<button onclick="מכריע('העלם')" style="background:#333;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">העלם</button>
+<button onclick="מכריע('למד')" style="background:#8e44ad;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">למד</button>
+<button onclick="מכריע('צייר')" style="background:#e91e63;color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer;margin:2px">צייר</button>
+</div>
+</div>
+<script>
+let שעון_שרת=null,הפרש=0,מצב_שעון="חי",נעלם=false;
+function עדכן_שעון(){
+const ע=new Date();const ש=ע.toLocaleTimeString("he-IL",{hour12:false})+"."+String(ע.getMilliseconds()).padStart(3,"0");
+document.getElementById("שעון").textContent=ש;
+if(Math.abs(הפרש)>2000&&מצב_שעון!=="שתוק"&&מצב_שעון!=="העלם"){
+document.getElementById("רוגז-שעון").style.display="block";
+document.getElementById("רוגז-שעון").textContent="רוגז: הפרש "+Math.round(הפרש)+"ms מהשרת";
+document.getElementById("מכריעים").style.display="block"}
+requestAnimationFrame(עדכן_שעון)}
+עדכן_שעון();
+
+async function בדוק_שעה(){try{
+const ל=Date.now();const r=await fetch("/api/%D7%A9%D7%A2%D7%94");const d=await r.json();
+const א=Date.now();הפרש=(ל+א)/2-new Date(d.שעה).getTime();שעון_שרת=d.שעה;
+if(Math.abs(הפרש)<2000){document.getElementById("רוגז-שעון").style.display="none";document.getElementById("מכריעים").style.display="none"}
+}catch(e){}}
+setInterval(בדוק_שעה,10000);בדוק_שעה();
+
+function מכריע(פ){
+const ר=document.getElementById("רוגז-שעון");const מ=document.getElementById("מכריעים");const ש=document.getElementById("שעון-מיכל");
+מצב_שעון=פ;
+if(פ==="תקן"){ר.style.display="none";מ.style.display="none";ר.textContent=""}
+else if(פ==="רגוז"){ר.textContent="רוגז! הפרש "+Math.round(הפרש)+"ms";ר.style.color="#c0392b"}
+else if(פ==="שתוק"){ר.style.display="none";מ.style.display="none"}
+else if(פ==="שחוק"){ר.textContent="😄 "+Math.round(הפרש)+"ms? סבבה!";ר.style.color="#f39c12";ר.style.display="block"}
+else if(פ==="הרהר"){ר.textContent="🤔 למה "+Math.round(הפרש)+"ms...";ר.style.color="#3498db";ר.style.display="block"}
+else if(פ==="העלם"){נעלם=true;ש.style.opacity="0";ש.style.transition="opacity 1s";setTimeout(()=>{ש.style.display="none";
+const כ=document.createElement("div");כ.style.cssText="position:fixed;bottom:8px;left:8px;z-index:9999;cursor:pointer;font-size:1.2em";
+כ.textContent="⏰";כ.onclick=()=>{ש.style.display="block";ש.style.opacity="1";כ.remove();נעלם=false;מצב_שעון="חי"};
+document.body.appendChild(כ)},1000)}
+else if(פ==="למד"){ר.textContent="📚 לומד בבידוד... הפרש: "+Math.round(הפרש)+"ms";ר.style.color="#8e44ad";ר.style.display="block";מ.style.display="none";
+setTimeout(()=>{ר.textContent="📚 למד! הפרש נורמלי: ±2 שניות";setTimeout(()=>{ר.style.display="none"},3000)},3000)}
+else if(פ==="צייר"){ר.innerHTML="🎨 ";const צ=["תקן","רגוז","שתוק","שחוק","הרהר","העלם","למד"];
+צ.forEach((כ,i)=>{const ב=document.createElement("span");ב.textContent=כ;ב.style.cssText="display:inline-block;cursor:pointer;margin:0 3px;animation:spin "+(0.5+i*0.2)+"s infinite alternate;font-size:.9em";
+ב.onclick=()=>מכריע(כ);ר.appendChild(ב)});ר.style.display="block";ר.style.color="#e91e63"}
+}
+</script>'''
+
 def תוכן_משתמש():
-    """טאב משתמש - האתר חי דרך WebSocket"""
+    """טאב משתמש - האתר חי דרך WebSocket + שעון + מכריעים"""
     return f'''<!DOCTYPE html>
 <html lang="he" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>סולחא</title>
 <style>*{{margin:0;padding:0;box-sizing:border-box}}body{{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#f5f0e8;color:#2c2c2c;min-height:100vh}}
 #ת{{min-height:100vh}}.ס{{position:fixed;bottom:6px;right:6px;font-size:.65em;color:#999}}</style></head><body>
 <div id="ת">טוען...</div><div class="ס"><span id="נ" style="color:red">●</span> <span id="ס">מתחבר</span></div>
+{שעון_js()}
 <script>let ws,last="";function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נ").style.color="green";document.getElementById("ס").textContent="חי";ws.send(JSON.stringify({{מי:"משתמש",מה:"אתר"}}))}};
 ws.onclose=()=>{{document.getElementById("נ").style.color="red";document.getElementById("ס").textContent="מנותק";setTimeout(c,3000)}};
@@ -338,7 +395,9 @@ function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נורה").className="נ g";document.getElementById("סט").textContent="מחובר"}};
 ws.onclose=()=>{{document.getElementById("נורה").className="נ r";document.getElementById("סט").textContent="מנותק";setTimeout(c,3000)}};
 ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"){{const h=JSON.stringify(d.תוכן);if(h!==lH){{lH=h;draw(d)}}}}}}}};c();
-</script></body></html>'''
+</script>
+{שעון_js()}
+</body></html>'''
 
 
 # ══════════════════════════════════════
