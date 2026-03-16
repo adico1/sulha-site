@@ -95,7 +95,7 @@ class צופה:
             with urllib.request.urlopen(בקשה, context=ctx, timeout=10) as ת:
                 תוכן = json.loads(ת.read().decode("utf-8"))
                 self.מחובר = True; self.צפיות += 1
-                h = json.dumps(תוכן, ensure_ascii=False, sort_keys=True)[:500]
+                h = json.dumps(תוכן, ensure_ascii=False, sort_keys=True)
                 if h != self.אחרון.get(נתיב):
                     if self.אחרון.get(נתיב): אבם.רשום(self.שם, f"שינוי:{נתיב}", "שינוי")
                     self.אחרון[נתיב] = h
@@ -213,8 +213,8 @@ class בקר:
             try:
                 with open(os.path.join(שורש, "שלשה_ספרים.ספר"), "w", encoding="utf-8") as f:
                     f.write(f"שלשה ספרים · {{מי}}/{{מה}} · {datetime.now().isoformat()}\n═══\n")
-                    f.write(json.dumps({"אבם": {"ספר": אבם.ספר[-50:], "תגובות": אבם.ספר2[-50:], "שינויים": אבם.ספור[-50:]},
-                        "אברם": {"ספר": אברם.ספר[-50:]}, "אברהם": {"ספר": אברהם.ספר[-50:], "שינויים": אברהם.ספור[-50:]}
+                    f.write(json.dumps({"אבם": {"ספר": אבם.ספר, "תגובות": אבם.ספר2, "שינויים": אבם.ספור},
+                        "אברם": {"ספר": אברם.ספר}, "אברהם": {"ספר": אברהם.ספר, "שינויים": אברהם.ספור}
                     }, ensure_ascii=False, indent=2))
             except: pass
 
@@ -394,7 +394,7 @@ document.getElementById("ת").innerHTML=h}}
 function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נורה").className="נ g";document.getElementById("סט").textContent="מחובר"}};
 ws.onclose=()=>{{document.getElementById("נורה").className="נ r";document.getElementById("סט").textContent="מנותק";setTimeout(c,3000)}};
-ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"){{const h=JSON.stringify(d.תוכן);if(h!==lH){{lH=h;draw(d)}}}}}}}};c();
+ws.onmessage=e=>{{const d=JSON.parse(e.data);if(d.מה==="צפה_פנים"){{const h=JSON.stringify(d.תוכן);if(h!==lH){{lH=h;draw(d)}}}} else if(d.מה==="בקשה"){{draw({{תוכן:d.תוכן}})}}}}}};c();
 </script>
 {שעון_js()}
 </body></html>'''
@@ -435,7 +435,7 @@ async def ws_טפל(websocket):
                 }, ensure_ascii=False))
             elif מה == "ספרים":
                 await websocket.send(json.dumps({"מי": "אברהם", "מה": "ספרים", "תוכן": {
-                    "אבם": אבם.ספר[-20:], "אברם": אברם.ספר[-20:], "אברהם": אברהם.ספר[-20:]
+                    "אבם": אבם.ספר, "אברם": אברם.ספר, "אברהם": אברהם.ספר
                 }}, ensure_ascii=False))
             elif מה.startswith("/"):
                 ממשק = "github" if "github" in מה else "עצמי"
@@ -454,10 +454,17 @@ async def ws_טפל(websocket):
         אברהם.רשום(שם, "ניתוק", "שינוי")
 
 async def ws_צופה():
+    # צופה - ממתין לפוטנציאל מבקשות
     while True:
-        await asyncio.sleep(5)
-        await ws_שלח("אברהם", "צפה_פנים",
-            {**בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()})
+        await asyncio.sleep(1)
+        if ws_מחוברים:
+            await ws_שלח("אברהם", "צפה_פנים",
+                {**בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה(),
+                 "שעה": datetime.now().isoformat(),
+                 "ספרים": {"אבם": {"ספר": len(אבם.ספר), "תגובות": len(אבם.ספר2), "שינויים": len(אבם.ספור)},
+                            "אברם": {"ספר": len(אברם.ספר)},
+                            "אברהם": {"ספר": len(אברהם.ספר), "שינויים": len(אברהם.ספור)}},
+                 "רוגזים": {"אבם": אבם.ספור, "אברהם": אברהם.ספור}})
 
 
 # ══════════════════════════════════════
@@ -488,7 +495,7 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
         elif נ == "/אתר": self._html(תוכן_אתר())
         elif נ == "/api/צפה": self._json(בקר_ראשי.צפה_פנים())
         elif נ == "/api/מצב": self._json({ש: מ.צפה() for ש, מ in בקר_ראשי.ממשקים.items()})
-        elif נ == "/api/רוגזים": self._json({"אבם": אבם.ספור[-20:], "אברם": אברם.ספור[-20:], "אברהם": אברהם.ספור[-20:]})
+        elif נ == "/api/רוגזים": self._json({"אבם": אבם.ספור, "אברם": אברם.ספור, "אברהם": אברהם.ספור})
         elif נ == "/api/מחולל": self._json({ש: ב.צפה() for ש, ב in בקר_ראשי.בנים.items()})
         elif נ == "/api/ספרים": self._json({"אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()})
         elif נ == "/api/עולמות": self._json(עולמות)
