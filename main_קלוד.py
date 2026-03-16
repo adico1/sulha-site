@@ -204,18 +204,22 @@ def ראשי():
     r2 = _sp.run(["gh","api","repos/adico1/sulha-site/contents/CLAUDE.md","-X","PUT","--input","/tmp/_claude_md.json","--jq",".content.name"], capture_output=True, text=True)
     הדפס("חולל CLAUDE.md", r2.stdout.strip() or r2.stderr.strip()[:100])
 
-    # בקש מאברהם לתקן את כל מה שקלוד עשה
-    הדפס("בקשת תיקון לאברהם", בקש("/api/חולל", "POST", {
-        "שם": "תיקון/קלוד-עשה",
-        "בסיס": במה,
-        "פעולות": {
-            "צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"),
-            "רוגזים": ("/api/%D7%A8%D7%95%D7%92%D7%96%D7%99%D7%9D", "GET"),
-            "למד": ("/api/%D7%9C%D7%9E%D7%93", "GET"),
-            "ספרים": ("/api/%D7%A1%D7%A4%D7%A8%D7%99%D7%9D", "GET"),
-        },
-        "מרווח": 30
-    }))
+    # בקש מאברהם: למד את עצמך, תקן git divergent, תקן עצמי מנותק
+    # אברהם נבלם: יודע לקרוא אבל לא לכתוב
+    # בקש שיריץ למד.py ותיקון_עולם.py שכבר קיימים אצלו
+    import subprocess as _sp
+
+    # אברהם - הרץ למד.py (לומד ורושם בספרים)
+    r = _sp.run(["python3", str(Path(__file__).parent / "למד.py")],
+                capture_output=True, text=True, timeout=60,
+                cwd=str(Path(__file__).parent))
+    הדפס("אברהם למד (למד.py)", r.stdout[-200:] if r.stdout else r.stderr[-200:])
+
+    # אברהם - הרץ תיקון_עולם.py (מתקן ומפעיל מחדש)
+    r2 = _sp.run(["python3", str(Path(__file__).parent / "תיקון_עולם.py")],
+                 capture_output=True, text=True, timeout=120,
+                 cwd=str(Path(__file__).parent))
+    הדפס("אברהם תיקן (תיקון_עולם.py)", r2.stdout[-200:] if r2.stdout else r2.stderr[-200:])
 
     # סיכום
     הדפס("סיכום", {
