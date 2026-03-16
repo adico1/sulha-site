@@ -268,15 +268,89 @@ def כוון_אברהם():
         "מרווח": 30
     }))
 
-    # בדוק מצב
+    # כוון אברהם לתקן עצמי דרך GitHub API + תיקון_עולם.py
+    import base64, subprocess as _sp
+
+    # קרא תיקון_עולם.py מ-GitHub דרך אברהם
+    תיקון_קיים = בקש("/api/בקש", "POST", {
+        "ממשק": "github",
+        "נתיב": "/repos/adico1/sulha-site/contents/%D7%AA%D7%99%D7%A7%D7%95%D7%9F_%D7%A2%D7%95%D7%9C%D7%9D.py",
+        "שיטה": "GET"
+    })
+    sha_תיקון = None
+    if isinstance(תיקון_קיים, dict):
+        ת = תיקון_קיים.get("תגובה", תיקון_קיים)
+        if isinstance(ת, dict):
+            sha_תיקון = ת.get("sha")
+
+    # בנה תיקון_עולם.py חדש שמתקן עצמי
+    קוד_תיקון = '#!/usr/bin/env python3\n'
+    קוד_תיקון += 'import json, os, subprocess, time, signal\n'
+    קוד_תיקון += 'from datetime import datetime\n'
+    קוד_תיקון += 'שורש = os.path.dirname(os.path.abspath(__file__))\n'
+    קוד_תיקון += 'def רשום(מי, מה, תוכן):\n'
+    קוד_תיקון += '    with open(os.path.join(שורש, "שלשה_ספרים.ספר"), "a", encoding="utf-8") as f:\n'
+    קוד_תיקון += '        f.write(chr(10) + "=== " + מי + "/" + מה + " " + datetime.now().isoformat() + " ===" + chr(10) + תוכן + chr(10))\n'
+    קוד_תיקון += 'def תקן(שם, ישן, חדש):\n'
+    קוד_תיקון += '    נ = os.path.join(שורש, שם)\n'
+    קוד_תיקון += '    with open(נ, "r", encoding="utf-8") as f: ת = f.read()\n'
+    קוד_תיקון += '    if ישן in ת:\n'
+    קוד_תיקון += '        with open(נ, "w", encoding="utf-8") as f: f.write(ת.replace(ישן, חדש, 1))\n'
+    קוד_תיקון += '        return True\n'
+    קוד_תיקון += '    return False\n'
+    קוד_תיקון += 'if __name__ == "__main__":\n'
+    קוד_תיקון += '    print("תיקון עולם")\n'
+    קוד_תיקון += '    for ק in sorted(os.listdir(שורש)):\n'
+    קוד_תיקון += '        נ = os.path.join(שורש, ק)\n'
+    קוד_תיקון += '        if os.path.isfile(נ) and not ק.startswith("."):\n'
+    קוד_תיקון += '            with open(נ, "r", encoding="utf-8") as f: ת = f.read()\n'
+    קוד_תיקון += '            רשום("אברהם/למד", ק, ת)\n'
+    קוד_תיקון += '            print(f"  למד {ק}: {len(ת)}b")\n'
+    קוד_תיקון += '    r = תקן("main.py", \'פעולות={"שורש": ("/", "GET")}\', \'פעולות={"צפה": ("/api/%D7%A6%D7%A4%D7%94", "GET"), "שעה": ("/api/%D7%A9%D7%A2%D7%94", "GET")}\')\n'
+    קוד_תיקון += '    if r: print("  תוקן: עצמי צופה JSON"); רשום("אברהם/תיקון", "עצמי", "צופה JSON")\n'
+    קוד_תיקון += '    r2 = תקן("main.py", "            if ש != \\"עצמי\\": מ.הפעל(60)", "            מ.הפעל(60)")\n'
+    קוד_תיקון += '    if r2: print("  תוקן: עצמי מופעל"); רשום("אברהם/תיקון", "עצמי-פעיל", "הפעל עצמי")\n'
+    קוד_תיקון += '    for cmd in [["git","add","-A"],["git","commit","-m","תיקון עולם"],["git","push"]]:\n'
+    קוד_תיקון += '        subprocess.run(cmd, capture_output=True, text=True, timeout=30, cwd=שורש)\n'
+    קוד_תיקון += '    print("  צבאות")\n'
+    קוד_תיקון += '    for p in [8771, 8772]:\n'
+    קוד_תיקון += '        try:\n'
+    קוד_תיקון += '            r = subprocess.run(["lsof","-ti",f":{p}"], capture_output=True, text=True)\n'
+    קוד_תיקון += '            for pid in r.stdout.strip().split(chr(10)):\n'
+    קוד_תיקון += '                if pid and int(pid) != os.getpid(): os.kill(int(pid), 9)\n'
+    קוד_תיקון += '        except: pass\n'
+    קוד_תיקון += '    time.sleep(2)\n'
+    קוד_תיקון += '    subprocess.Popen(["python3", os.path.join(שורש, "main.py")], cwd=שורש, start_new_session=True)\n'
+    קוד_תיקון += '    print("  main.py הופעל מחדש")\n'
+
+    # שלח ל-GitHub דרך gh CLI
+    b64 = base64.b64encode(קוד_תיקון.encode("utf-8")).decode("ascii")
+    d = {"message": "אברהם מתקן עצמו", "content": b64}
+    if sha_תיקון:
+        d["sha"] = sha_תיקון
+    import tempfile
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        json.dump(d, f)
+        tmp = f.name
+    r = _sp.run(["gh", "api", "repos/adico1/sulha-site/contents/%D7%AA%D7%99%D7%A7%D7%95%D7%9F_%D7%A2%D7%95%D7%9C%D7%9D.py",
+                 "-X", "PUT", "--input", tmp, "--jq", ".content.name"], capture_output=True, text=True)
+    הדפס("חולל תיקון_עולם.py", r.stdout.strip() or r.stderr.strip()[:100])
+
+    # pull + הרץ תיקון
+    _sp.run(["git", "pull", "--rebase"], capture_output=True, text=True, cwd=str(Path(__file__).parent))
+    r2 = _sp.run(["python3", str(Path(__file__).parent / "תיקון_עולם.py")],
+                 capture_output=True, text=True, timeout=120, cwd=str(Path(__file__).parent))
+    הדפס("תיקון עולם", r2.stdout[-300:] if r2.stdout else r2.stderr[-300:])
+
+    # חכה ובדוק
+    import time as _time
+    _time.sleep(6)
     צפה2 = ראה()
     if isinstance(צפה2, dict):
         ל = צפה2.get("ליבה", {})
-        הדפס("מצב", f"ממשקים:{ל.get('ממשקים')} בנים:{ל.get('בנים')} רוגזים:{ל.get('רוגזים')}")
+        הדפס("מצב אחרי תיקון", f"ממשקים:{ל.get('ממשקים')} בנים:{ל.get('בנים')} רוגזים:{ל.get('רוגזים')}")
         for שם, מ in צפה2.get("פנים", {}).items():
-            הדפס(f"  {שם}", f"{'✓' if מ.get('מחובר') else '✗'} צפיות:{מ.get('צפיות',0)}")
-        for שם, ב in צפה2.get("בנים", {}).items():
-            הדפס(f"  בן {שם}", f"{'✓' if ב.get('מחובר') else '✗'} צפיות:{ב.get('צפיות',0)}")
+            הדפס(f"  {שם}", f"{'✓' if מ.get('מחובר') else '✗'} פעיל:{מ.get('פעיל')}")
 
 
 if __name__ == "__main__":
