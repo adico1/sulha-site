@@ -400,7 +400,8 @@ const ר=ת.רוגזים||{{}};let רסהכ=0;for(const[n,v] of Object.entries(�
 if(רסהכ>0){{h+='<h3>רוגזים ('+רסהכ+')</h3>';for(const[n,v] of Object.entries(ר)){{if(Array.isArray(v))for(const x of v.slice(-5)){{h+=`<div class="rw" style="background:#200"><div class="sm">${{x.מי||""}} ${{x.מה||""}}</div><div class="sm">${{(x.מתי||"").slice(-8)}}</div></div>`}}}}}}
 
 if(ת.נתיב){{h+='<h3>בקשה אחרונה</h3><div class="rw"><div class="c">'+ת.נתיב+'</div><div class="sm">'+ת.שעה+'</div></div>'}}
-if(ת.בקשות_אדי){{h+='<h3>בקשות אדי ('+ת.בקשות_אדי.length+')</h3>';for(const ב of ת.בקשות_אדי.slice(-10)){{h+='<div class="rw"><div class="sm">'+ב.מה.substring(0,100)+'</div></div>'}}}}
+if(ת.צופי_דפדפן){{h+='<h3>דפדפנים ('+ת.צופי_דפדפן.length+')</h3>';for(const ד of ת.צופי_דפדפן){{h+='<div class="rw"><div class="sm"><span class="נ g"></span>'+ד.מי+'</div></div>'}}}}
+if(ת.בקשות_אדי){{h+='<h3>בקשות אדי ('+ת.בקשות_אדי.length+')</h3>';for(const ב of ת.בקשות_אדי.slice(-20).reverse()){{h+='<div class="rw"><div class="sm">'+ב.מה.substring(0,150)+'</div></div>'}}}}
 document.getElementById("ת").innerHTML=h}}
 function c(){{ws=new WebSocket("ws://localhost:{פורט_ws}");
 ws.onopen=()=>{{document.getElementById("נורה").className="נ g";document.getElementById("סט").textContent="מחובר"}};
@@ -432,8 +433,30 @@ async def ws_טפל(websocket):
     שם = f"דפדפן/{id(websocket)}"
     ws_מחוברים.add(websocket)
     אברהם.רשום(שם, "חיבור", "שינוי")
+    # שלח מצב מלא כולל בקשות אדי וכל הצופים
+    import glob as _g
+    _בקשות = []
+    _לוגים = _g.glob(os.path.expanduser("~/.claude/projects/-Users-adicohen-------------/*.jsonl"))
+    if _לוגים:
+        with open(_לוגים[0], "r") as _f:
+            for _line in _f:
+                try:
+                    _d = json.loads(_line)
+                    if _d.get("type") == "human":
+                        _msg = _d.get("message", {})
+                        if isinstance(_msg, dict):
+                            for _c in _msg.get("content", []):
+                                if isinstance(_c, dict) and _c.get("type") == "text" and len(_c["text"]) > 5:
+                                    _בקשות.append({"מי": "אדי", "מה": _c["text"][:300]})
+                except: pass
     await websocket.send(json.dumps({"מי": "אברהם", "מה": "צפה_פנים",
-        "תוכן": {**בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה()}
+        "תוכן": {**בקר_ראשי.צפה_פנים(), "אבם": אבם.צפה(), "אברם": אברם.צפה(), "אברהם": אברהם.צפה(),
+                  "שעה": datetime.now().isoformat(),
+                  "ספרים": {"אבם": {"ספר": len(אבם.ספר), "תגובות": len(אבם.ספר2), "שינויים": len(אבם.ספור)},
+                             "אברם": {"ספר": len(אברם.ספר)}, "אברהם": {"ספר": len(אברהם.ספר), "שינויים": len(אברהם.ספור)}},
+                  "רוגזים": {"אבם": אבם.ספור[-5:], "אברהם": אברהם.ספור[-5:]},
+                  "בקשות_אדי": _בקשות,
+                  "צופי_דפדפן": [{"מי": f"דפדפן/{id(w)}", "מחובר": True} for w in ws_מחוברים]}
     }, ensure_ascii=False))
     try:
         async for הודעה in websocket:
