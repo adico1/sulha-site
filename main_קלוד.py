@@ -119,10 +119,7 @@ def בקשות_אדי():
     import glob
     # חפש בכל המקומות האפשריים
     נתיבים = [
-        str(Path.home() / ".claude/projects/-Users-adicohen-------------/*.jsonl"),
-        str(Path.home() / ".claude/projects/-Users-adicohen--------------/*.jsonl"),
-        str(Path.home() / ".claude/projects/*יוצאים*/*.jsonl"),
-        str(Path.home() / ".claude/projects/**/*.jsonl"),
+        str(Path.home() / ".claude/projects/-Users-adicohen-----------------------------------/*.jsonl"),
     ]
     כל_בקשות = []
     for תבנית in נתיבים:
