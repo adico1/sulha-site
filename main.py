@@ -594,10 +594,15 @@ def main():
         if os.path.exists(נ):
             ש = len(open(נ, encoding="utf-8").readlines())
             print(f"[אברהם] למד main_קלוד.py: {ש} שורות")
-        webbrowser.open(f"http://localhost:{פורט}/")
-        time.sleep(1)
-        webbrowser.open(f"http://localhost:{פורט}/%D7%A0%D7%99%D7%94%D7%95%D7%9C")
-        print("[אברהם] 2 טאבים קבועים נפתחו")
+        # פתח טאבים רק אם אין דפדפנים מחוברים
+        time.sleep(3)
+        if not ws_מחוברים:
+            webbrowser.open(f"http://localhost:{פורט}/")
+            time.sleep(1)
+            webbrowser.open(f"http://localhost:{פורט}/%D7%A0%D7%99%D7%94%D7%95%D7%9C")
+            print("[אברהם] 2 טאבים קבועים נפתחו")
+        else:
+            print(f"[אברהם] {len(ws_מחוברים)} דפדפנים כבר מחוברים")
     threading.Thread(target=_אתחל, daemon=True).start()
     if WS:
         def _ws():
