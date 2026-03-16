@@ -497,6 +497,17 @@ class שרתHTTP(http.server.BaseHTTPRequestHandler):
             if len(ח) >= 5 and ח[3] in בקר_ראשי.ממשקים: self._json(בקר_ראשי.ממשקים[ח[3]].עשה(ח[4]))
             elif len(ח) == 4 and ח[3] in בקר_ראשי.ממשקים: self._json(בקר_ראשי.ממשקים[ח[3]].צפה())
             else: self._json({"שגיאה": "לא קיים"})
+        elif נ == "/api/למד":
+            קמ = {}
+            for ק in os.listdir(שורש):
+                נק = os.path.join(שורש, ק)
+                if os.path.isfile(נק) and not ק.startswith("."):
+                    try:
+                        with open(נק, "r", encoding="utf-8") as f: תק = f.read()
+                        קמ[ק] = {"שורות": len(תק.split(chr(10))), "אורך": len(תק)}
+                        אברהם.רשום("למד", "קובץ:" + ק, "ענה")
+                    except: pass
+            self._json(קמ)
         else: self._json({"מי": "אברהם", "מה": נ, "תוכן": "catch all"})
 
     def do_POST(self):
