@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>סולחא · מכריע</title>
+  <style>
+    :root {
+      --paper: #f3eadc;
+      --ink: #231f19;
+      --card: #fffaf1;
+      --line: #d8cab3;
+      --green: #1f7a4d;
+      --muted: #74695c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top right, rgba(191,148,88,.18), transparent 28%),
+        linear-gradient(180deg, #ece1d0, var(--paper));
+      color: var(--ink);
+      font-family: "David Libre", "Noto Serif Hebrew", serif;
+    }
+    .wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 32px rgba(53, 40, 20, .08);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 42px);
+    }
+    .sub {
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 18px;
+    }
+    .stack { display: grid; gap: 18px; }
+    .metric {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #f4ecdf;
+      border: 1px solid var(--line);
+    }
+    .metric b {
+      display: block;
+      font-size: 22px;
+      margin-top: 4px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 22px;
+      cursor: pointer;
+      font-size: 18px;
+      font-family: inherit;
+    }
+    .approve {
+      background: var(--green);
+      color: #fff;
+    }
+    .refresh {
+      background: #d9c7a7;
+      color: #2a241b;
+    }
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #f1e6d4;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      padding: 16px;
+      min-height: 220px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .tiny {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    @media (max-width: 760px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>מכריע פשוט</h1>
+      <div class="sub">
+        בקשה ממתינה. אם לא לחצת <b>אשר</b> תוך 5 שניות, אברהם עובר ללימוד המפרט ומעלה את מונה הנסיונות עד לאישור.
+      </div>
+      <div class="grid">
+        <div class="stack">
+          <div class="metric">מצב נוכחי<b id="status">טוען...</b></div>
+          <div class="metric">נסיונות עד כה<b id="attempts">0</b></div>
+          <div class="metric">בקשה נוכחית<b id="requestText">אין</b></div>
+          <div class="metric">צומת צפה<b id="nodeState">טוען...</b></div>
+          <div class="actions">
+            <button class="approve" id="approveBtn">אשר</button>
+            <button class="refresh" id="refreshBtn">רענן</button>
+          </div>
+          <div class="tiny" id="hint"></div>
+        </div>
+        <pre id="raw">טוען...</pre>
+      </div>
+    </div>
+  </div>
+  <script>
+    function apiBase() {
+      try {
+        const q = new URLSearchParams(location.search);
+        const explicit = q.get('api') || localStorage.getItem('sulha_simple_api') || window.SULHA_SIMPLE_API || '';
+        return explicit ? String(explicit).replace(/\/$/, '') : '';
+      } catch (_) {
+        return '';
+      }
+    }
+
+    function apiUrl(path) {
+      const base = apiBase();
+      return base ? (base + path) : path;
+    }
+
+    async function loadState() {
+      const response = await fetch(apiUrl('/api/מצב'));
+      const data = await response.json();
+      const pending = data.ממתינה || null;
+      const node = data.צומת || null;
+      document.getElementById('status').textContent = pending ? pending.מצב : 'שקט';
+      document.getElementById('attempts').textContent = pending ? String(pending.נסיונות || 0) : '0';
+      document.getElementById('requestText').textContent = pending ? (pending.מה || 'אין') : 'אין';
+      document.getElementById('nodeState').textContent = node ? (node.מצב || 'שקט') : 'שקט';
+      document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
+      document.getElementById('hint').textContent = 'API: ' + (apiBase() || 'מקומי');
+    }
+
+    async function approve() {
+      await fetch(apiUrl('/api/אשר'), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({מבקש: 'עובדיה עדי כהן'})
+      });
+      await loadState();
+    }
+
+    document.getElementById('approveBtn').addEventListener('click', approve);
+    document.getElementById('refreshBtn').addEventListener('click', loadState);
+    setInterval(loadState, 1000);
+    loadState();
+  </script>
+</body>
+</html>
