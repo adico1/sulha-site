@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>סולחא · צפה</title>
+  <style>
+    :root {
+      --bg: #0a1113;
+      --fg: #e7efe6;
+      --muted: #8da198;
+      --line: rgba(231, 239, 230, .12);
+      --accent: #9ae2b0;
+      --panel: rgba(10, 17, 19, .78);
+    }
+    * { box-sizing: border-box; margin: 0; }
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
+    }
+
+    /* סרגל מנהל */
+    .ab {
+      background: rgba(0,0,0,.4);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 16px;
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      font-size: 12px;
+    }
+    .ab .lbl { color: var(--accent); font-weight: 600; margin-inline-end: 8px; }
+    .ab button {
+      border: 1px solid var(--line); border-radius: 999px;
+      padding: 5px 12px; background: transparent;
+      color: var(--muted); font: inherit; font-size: 12px; cursor: pointer;
+    }
+    .ab button:hover { color: var(--fg); border-color: var(--accent); }
+    .ab button.on { background: var(--accent); color: #102016; border-color: var(--accent); }
+    .ab select {
+      background: rgba(255,255,255,.05); border: 1px solid var(--line);
+      border-radius: 8px; color: var(--fg); padding: 4px 8px; font: inherit; font-size: 12px;
+    }
+    .ab .sep { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
+
+    /* מסגרת */
+    .shell {
+      min-height: calc(100vh - 40px);
+      border: 1px solid var(--line); border-radius: 24px;
+      background: var(--panel);
+      display: grid; grid-template-rows: auto auto 1fr;
+      overflow: hidden; margin: 8px;
+    }
+    .bar {
+      display: flex; gap: 12px; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--line);
+      color: var(--muted); font-size: 13px;
+    }
+    .status { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .chip { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--accent); }
+    .layout { display: grid; grid-template-columns: minmax(0,1fr) 360px; min-height: 0; }
+    .view { padding: 18px; min-height: 0; overflow: auto; }
+    .side {
+      border-inline-start: 1px solid var(--line); padding: 18px;
+      display: grid; grid-template-rows: auto auto 1fr; gap: 14px; min-height: 0;
+    }
+    .box { border: 1px solid var(--line); border-radius: 18px; padding: 14px; background: rgba(255,255,255,.02); }
+    .box h3 { margin: 0 0 10px; color: var(--accent); font-size: 14px; }
+    .input {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px;
+      background: rgba(255,255,255,.03); color: var(--fg);
+      padding: 11px 14px; font: inherit; font-size: 14px; outline: none;
+    }
+    .input:focus { border-color: var(--accent); }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .pbtn { border: 0; border-radius: 999px; padding: 10px 14px; background: var(--accent); color: #102016; font: inherit; cursor: pointer; }
+    .pbtn.alt { background: #dfe9dd; }
+    #screens { display: grid; gap: 14px; }
+    .screen { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: rgba(255,255,255,.02); }
+    .screen-head {
+      display: flex; gap: 10px; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 13px;
+    }
+    .screen-body { padding: 14px; display: grid; gap: 10px; }
+    .line { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; min-height: 24px; }
+    .glyph {
+      display: inline-grid; place-items: center; min-width: 1ch; min-height: 1.6em;
+      padding-inline: .08em; border-radius: 6px; position: relative;
+    }
+    .glyph[data-kind="space"] { opacity: .35; }
+    .glyph:hover { background: rgba(154,226,176,.12); }
+    .list { display: grid; gap: 8px; max-height: 100%; overflow: auto; }
+    .item { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13px; }
+    .empty { color: var(--muted); }
+    .hidden { display: none !important; }
+
+    /* iframe חוץ */
+    #hutz-iframe { width: 100%; height: calc(100vh - 40px); border: 0; border-radius: 24px; margin: 8px; }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .side { border-inline-start: 0; border-top: 1px solid var(--line); }
+    }
+  </style>
+</head>
+<body>
+<script>
+// הגנה — רק מורשים
+var _u = null;
+try { _u = JSON.parse(localStorage.getItem('sulha_user') || 'null'); } catch(_){}
+if (!_u || ['עובדיה עדי כהן','שחף גליה כהן'].indexOf(_u) < 0) {
+  window.location.href = '/';
+}
+</script>
+
+  <!-- סרגל מנהל -->
+  <div class="ab">
+    <span class="lbl">מנהל</span>
+    <button id="ab-hutz" onclick="av('חוץ')">חוץ</button>
+    <button id="ab-pnim" onclick="av('פנים')" class="on">פנים</button>
+    <button id="ab-nihul" onclick="av('ניהול')">ניהול</button>
+    <button id="ab-liba" onclick="av('ליבה')">ליבה</button>
+    <div class="sep"></div>
+    <select id="ab-user" onchange="su(this.value)">
+      <option value="עובדיה עדי כהן">עדי</option>
+      <option value="שחף גליה כהן">שחף</option>
+    </select>
+    <div class="sep"></div>
+    <button onclick="lo()" style="color:#e55">יציאה</button>
+  </div>
+
+  <!-- פנים -->
+  <div id="pg-pnim">
+    <div class="shell">
+      <div class="bar">
+        <div class="status">
+          <span class="chip" id="st-mode">פנים</span>
+          <span class="chip" id="st-conn">מנותק</span>
+          <span class="chip" id="st-time">...</span>
+        </div>
+        <div id="st-meta">סולחא</div>
+      </div>
+      <div class="bar" id="st-note">צפה</div>
+      <div class="layout">
+        <main class="view"><div id="screens"></div></main>
+        <aside class="side">
+          <section class="box">
+            <h3>שיחה</h3>
+            <input id="req-in" class="input" type="text" placeholder="בקש">
+            <div class="actions">
+              <button class="pbtn" id="btn-send">שלח</button>
+              <button class="pbtn alt" id="btn-approve">אשר</button>
+              <button class="pbtn" id="btn-rogez" style="background:#c44;color:#fff">רוגז</button>
+            </div>
+          </section>
+          <section class="box">
+            <h3>כיוון</h3>
+            <div id="route-meta" class="list"></div>
+          </section>
+          <section class="box">
+            <h3>רשומות</h3>
+            <div id="log-list" class="list"></div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- חוץ בתצוגת מנהל -->
+  <iframe id="hutz-iframe" class="hidden" src="/"></iframe>
+
+<script>
+var S = {
+  user: _u, page: 'פנים', source: '', time: '',
+  requests: [], done: [], ws: null, connected: false,
+  viewport: {w: innerWidth, h: innerHeight}, sent: {},
+};
+
+function baseUrl() {
+  var q = new URLSearchParams(location.search);
+  return (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
+}
+function http(path, opts) { return fetch((baseUrl() || '') + path, opts); }
+
+// סרגל מנהל
+function av(view) {
+  ['ab-hutz','ab-pnim','ab-nihul','ab-liba'].forEach(function(id) { document.getElementById(id).classList.remove('on'); });
+  var map = {'חוץ':'ab-hutz','פנים':'ab-pnim','ניהול':'ab-nihul','ליבה':'ab-liba'};
+  if (map[view]) document.getElementById(map[view]).classList.add('on');
+
+  if (view === 'חוץ') {
+    document.getElementById('pg-pnim').classList.add('hidden');
+    document.getElementById('hutz-iframe').classList.remove('hidden');
+  } else {
+    document.getElementById('hutz-iframe').classList.add('hidden');
+    document.getElementById('pg-pnim').classList.remove('hidden');
+    S.page = view;
+    ld(); rn();
+  }
+}
+
+function su(name) {
+  S.user = name;
+  document.getElementById('ab-user').value = name;
+  ld(); rn();
+}
+
+function lo() {
+  localStorage.removeItem('sulha_user');
+  window.location.href = '/';
+}
+
+if (_u) document.getElementById('ab-user').value = _u;
+
+// תקשורת
+function cws() {
+  var q = new URLSearchParams(location.search);
+  var explicit = q.get('ws') || localStorage.getItem('sulha_ws') || '';
+  var host = location.hostname;
+  if (!explicit && host !== 'localhost' && host !== '127.0.0.1' && !host.startsWith('192.168.')) return;
+  var url = explicit || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + host + ':8772');
+  try {
+    S.ws = new WebSocket(url);
+    S.ws.onopen = function() { S.connected = true; S.source = 'WS'; rn(); };
+    S.ws.onclose = function() { S.connected = false; rn(); };
+    S.ws.onmessage = function(e) { try { ld(); } catch(_) {} };
+  } catch(_) {}
+}
+
+async function ld() {
+  try {
+    var ps = [http('/api/שעה').then(function(r){return r.json();})];
+    if (S.user) ps.push(http('/api/צפה-מבקש?' + new URLSearchParams({
+      'משתמש': S.user, 'דף': 'פיתוח',
+      'רוחב': String(S.viewport.w), 'גובה': String(S.viewport.h),
+    })).then(function(r){return r.json();}));
+    var r = await Promise.all(ps);
+    S.time = r[0]['שעה'] || '';
+    if (r[1]) { S.requests = r[1]['בקשות'] || []; S.done = r[1]['בוצעו'] || []; }
+  } catch(_) {}
+  rn();
+}
+
+async function sr(kind) {
+  var input = document.getElementById('req-in');
+  var text = (input.value || '').trim();
+  if (!text) return;
+  var key = (S.user||'?') + '|' + kind + '|' + text;
+  if (S.sent[key]) return;
+  S.sent[key] = true;
+  await http('/api/אחוד', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({'מי': S.user, 'מה': text, 'פעולה': kind, 'ממשק': 'סולחא', 'דף': S.page})
+  }).catch(function(){});
+  input.value = '';
+  await ld();
+}
+
+function gn(sid, li, gi, ch) {
+  var sp = document.createElement('span');
+  sp.className = 'glyph';
+  sp.dataset.address = sid+'/'+li+'/'+gi;
+  sp.dataset.kind = ch===' '?'space':'glyph';
+  sp.textContent = ch===' '?'\u00B7':ch;
+  return sp;
+}
+
+function sn(screen, idx) {
+  var id = screen.id || 'screen-'+idx;
+  var root = document.createElement('section'); root.className = 'screen';
+  var head = document.createElement('div'); head.className = 'screen-head';
+  head.innerHTML = '<span>'+(screen.title||id)+'</span><span>'+(screen.mode||'צפה')+'</span>';
+  var body = document.createElement('div'); body.className = 'screen-body';
+  var lines = Array.isArray(screen.lines)?screen.lines:(screen.text||'').split(/\r?\n/);
+  lines.forEach(function(line,li) {
+    var row = document.createElement('div'); row.className = 'line';
+    Array.from(line||' ').forEach(function(ch,gi) { row.appendChild(gn(id,li,gi,ch)); });
+    body.appendChild(row);
+  });
+  root.append(head,body);
+  return root;
+}
+
+function rs(screens) {
+  var m = document.getElementById('screens'); m.innerHTML = '';
+  if (!screens||!screens.length) { m.innerHTML = '<div class="empty">אין צפה</div>'; return; }
+  screens.forEach(function(s,i) { m.appendChild(sn(s,i)); });
+}
+
+function rl(id, rows) {
+  var el = document.getElementById(id); el.innerHTML = '';
+  if (!rows.length) { el.innerHTML = '<div class="empty">אין</div>'; return; }
+  rows.forEach(function(r) { var d = document.createElement('div'); d.className='item'; d.textContent=r; el.appendChild(d); });
+}
+
+function cv() {
+  S.viewport = {w: innerWidth, h: innerHeight};
+  var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
+  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
+
+  if (S.page === 'פנים') {
+    return [{ id:'pnim', title:'צפה פנים', mode:'זמן אמת',
+      text: 'משתמש: '+(S.user||'?')+'\nבקשות פתוחות: '+open.length+'\nבוצעו: '+S.done.length+'\nשעה: '+t+'\nשטח: '+S.viewport.w+'x'+S.viewport.h }];
+  }
+  if (S.page === 'ניהול') {
+    var all = [].concat(S.requests,S.done).sort(function(a,b){return (a['מספר']||0)-(b['מספר']||0);});
+    var lines = all.slice(-15).map(function(r) {
+      return (r['מצב']==='בוצע'?'\u2713':'\u2717')+' #'+(r['מספר']||'?')+' '+(r['מה']||'').substring(0,60);
+    });
+    return [{ id:'nihul', title:'ניהול', mode:'בקשות: '+all.length, text: lines.join('\n')||'אין' }];
+  }
+  if (S.page === 'ליבה') {
+    return [{ id:'liba', title:'ליבה', mode:'אברהם מצייר',
+      text: 'סולחא · ליבה\nשעה: '+t+'\nמשתמש: '+(S.user||'?')+'\nשטח: '+S.viewport.w+'x'+S.viewport.h+'\nבקשות: '+(S.requests.length+S.done.length)+'\nפתוחות: '+open.length }];
+  }
+  return [{ id:'d', title:'צפה', text:'טוען...' }];
+}
+
+function rn() {
+  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
+  document.getElementById('st-mode').textContent = S.page;
+  document.getElementById('st-conn').textContent = S.connected ? 'מחובר' : 'מנותק';
+  document.getElementById('st-time').textContent = t;
+  document.getElementById('st-note').textContent = S.user ? S.user + ' · ' + S.page : 'צפה';
+  rs(cv());
+  var open = S.requests.filter(function(r) { return r['מצב']!=='בוצע'; });
+  rl('route-meta', ['משתמש: '+(S.user||'אורח'), 'בקשות: '+(S.requests.length+S.done.length), 'פתוחות: '+open.length, 'שטח: '+S.viewport.w+'x'+S.viewport.h]);
+  rl('log-list', open.slice(-8).map(function(r) { return '#'+(r['מספר']||'?')+' '+(r['מה']||'').substring(0,50); }));
+}
+
+document.getElementById('btn-send').addEventListener('click', function() { sr('בקש'); });
+document.getElementById('btn-approve').addEventListener('click', function() { sr('אשר'); });
+document.getElementById('btn-rogez').addEventListener('click', async function() {
+  await http('/api/רוגז').catch(function(){}); await ld();
+});
+
+ld(); cws(); rn();
+</script>
+</body>
+</html>
