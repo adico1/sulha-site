@@ -137,18 +137,20 @@
     .btn:hover { opacity: .85; }
     .sent-msg { color: var(--accent); font-size: 13px; }
 
-    /* צל — הקונדסאים */
+    /* צל — מפת קונדסאים תלת מימד */
     .shadow-box {
       border: 1px solid var(--line);
       border-radius: 20px;
       padding: 20px;
       background: rgba(154, 226, 176, .03);
-      min-height: 200px;
+      min-height: 380px;
+      overflow: hidden;
     }
     .shadow-box h3 {
       color: var(--accent);
       font-size: 15px;
       margin-bottom: 14px;
+      text-align: center;
     }
     .shadow-pulse {
       display: inline-block; width: 8px; height: 8px;
@@ -157,36 +159,73 @@
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse { 0%,100% { opacity:.3; } 50% { opacity:1; } }
-    .shadow-stage {
+    .map3d-wrap {
+      perspective: 900px;
+      perspective-origin: 50% 40%;
+      height: 320px;
+      position: relative;
+    }
+    .map3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateX(55deg) rotateZ(-15deg);
+      transition: transform .6s;
+    }
+    .map3d:hover {
+      transform: rotateX(50deg) rotateZ(-10deg);
+    }
+    .map3d-node {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      border-radius: 16px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
-    }
-    .shadow-node {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px;
+      place-items: center;
       text-align: center;
-      background: rgba(255,255,255,.02);
-      transition: all .3s;
+      background: rgba(10, 17, 19, .85);
+      border: 1px solid var(--line);
+      transform-style: preserve-3d;
+      transition: all .5s ease;
+      cursor: default;
+      backface-visibility: hidden;
     }
-    .shadow-node .node-icon {
-      font-size: 28px;
-      margin-bottom: 6px;
-    }
-    .shadow-node .node-name {
-      font-size: 13px;
+    .map3d-node .n-icon { font-size: 26px; }
+    .map3d-node .n-name {
+      font-size: 10px;
       color: var(--fg);
       font-weight: 600;
+      line-height: 1.2;
     }
-    .shadow-node .node-status {
-      font-size: 11px;
+    .map3d-node .n-status {
+      font-size: 9px;
       color: var(--muted);
-      margin-top: 4px;
     }
-    .shadow-node.active {
+    .map3d-node.active {
       border-color: var(--accent);
-      background: rgba(154,226,176,.06);
+      background: rgba(154,226,176,.1);
+      box-shadow: 0 0 20px rgba(154,226,176,.2);
+    }
+    .map3d-node.active .n-icon {
+      animation: bob 1.5s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%,100% { transform: translateZ(0); }
+      50% { transform: translateZ(20px); }
+    }
+    .map3d-link {
+      position: absolute;
+      height: 1px;
+      background: var(--line);
+      transform-origin: 0 0;
+      pointer-events: none;
+      opacity: .4;
+    }
+    .map3d-link.active {
+      background: var(--accent);
+      opacity: .6;
+      height: 2px;
     }
 
     .hutz-footer {
@@ -312,10 +351,12 @@
     </div>
     <div class="hutz-body">
 
-      <!-- צל — קונדסאים -->
+      <!-- צל — מפת קונדסאים תלת מימד -->
       <div class="shadow-box">
         <h3><span class="shadow-pulse"></span>מה קורה על הבמה</h3>
-        <div id="shadow-stage" class="shadow-stage"></div>
+        <div class="map3d-wrap">
+          <div id="map3d" class="map3d"></div>
+        </div>
       </div>
 
       <!-- איסוף פרטים -->
@@ -442,45 +483,114 @@ function adminSwitchUser(name) {
   }
 }
 
-// ═══ חוץ — צל קונדסאים ═══
+// ═══ חוץ — מפת קונדסאים תלת מימד ═══
 
 var KONDENSAIM = [
-  {icon: '🎪', name: 'קרקס הפלאים', states: ['מחמם', 'על הבמה', 'הפסקה', 'סיום']},
-  {icon: '🏗️', name: 'בונה מגדלים', states: ['מתכנן', 'יוצק', 'מטפס', 'מנוח']},
-  {icon: '🎭', name: 'תיאטרון הצל', states: ['חזרה', 'הצגה', 'מחיאות', 'וילון']},
-  {icon: '🚀', name: 'תחנת שיגור', states: ['ספירה לאחור', 'שיגור', 'במסלול', 'נחיתה']},
-  {icon: '🌊', name: 'גולש גלים', states: ['ממתין', 'תופס גל', 'גולש', 'צולל']},
-  {icon: '🎨', name: 'סטודיו הצבע', states: ['מערבב', 'צובע', 'מייבש', 'תולה']},
-  {icon: '🔬', name: 'מעבדת חידות', states: ['חוקר', 'מנסה', 'מגלה', 'רושם']},
-  {icon: '🎵', name: 'תזמורת רחוב', states: ['מכוון', 'מנגן', 'סולו', 'קצה']},
+  {icon: '🎪', name: 'קרקס הפלאים', states: ['מחמם', 'על הבמה', 'הפסקה', 'סיום'], x: 15, y: 15},
+  {icon: '🏗️', name: 'בונה מגדלים', states: ['מתכנן', 'יוצק', 'מטפס', 'מנוח'], x: 55, y: 8},
+  {icon: '🎭', name: 'תיאטרון הצל', states: ['חזרה', 'הצגה', 'מחיאות', 'וילון'], x: 85, y: 20},
+  {icon: '🚀', name: 'תחנת שיגור', states: ['ספירה לאחור', 'שיגור', 'במסלול', 'נחיתה'], x: 10, y: 50},
+  {icon: '🌊', name: 'גולש גלים', states: ['ממתין', 'תופס גל', 'גולש', 'צולל'], x: 45, y: 42},
+  {icon: '🎨', name: 'סטודיו הצבע', states: ['מערבב', 'צובע', 'מייבש', 'תולה'], x: 78, y: 48},
+  {icon: '🔬', name: 'מעבדת חידות', states: ['חוקר', 'מנסה', 'מגלה', 'רושם'], x: 25, y: 75},
+  {icon: '🎵', name: 'תזמורת רחוב', states: ['מכוון', 'מנגן', 'סולו', 'קצה'], x: 62, y: 72},
+  {icon: '🧪', name: 'מפעל הבועות', states: ['ממלא', 'מנפח', 'משחרר', 'פוצץ'], x: 40, y: 88},
+  {icon: '🎡', name: 'גלגל ענק', states: ['עולה', 'בפסגה', 'יורד', 'עוצר'], x: 90, y: 78},
 ];
 
+// קשרים בין קונדסאים (אינדקסים)
+var LINKS = [[0,1],[1,2],[0,3],[3,4],[4,5],[2,5],[3,6],[4,7],[6,7],[6,8],[7,9],[8,9],[1,4]];
+
 var shadowState = {};
+var activityLevel = 0; // 0-10, מושפע מהשרת
 
-function updateShadow() {
-  var stage = document.getElementById('shadow-stage');
-  stage.innerHTML = '';
-
-  KONDENSAIM.forEach(function(k, i) {
-    // מצב פסאודו-אקראי שמשתנה כל כמה שניות
-    if (!shadowState[i] || Math.random() < 0.3) {
-      shadowState[i] = Math.floor(Math.random() * k.states.length);
-    }
-    var stateIdx = shadowState[i];
-    var isActive = stateIdx === 1 || stateIdx === 2;
-
-    var node = document.createElement('div');
-    node.className = 'shadow-node' + (isActive ? ' active' : '');
-    node.innerHTML =
-      '<div class="node-icon">' + k.icon + '</div>' +
-      '<div class="node-name">' + k.name + '</div>' +
-      '<div class="node-status">' + k.states[stateIdx] + '</div>';
-    stage.appendChild(node);
+// שואב רמת פעילות מהשרת (בלי לחשוף מידע!)
+function fetchActivityLevel() {
+  http('/api/שעה').then(function(r) { return r.json(); }).then(function(d) {
+    // משתמשים רק בשניות כ-seed לפעילות — אף מילה מבפנים
+    var sec = parseInt((d['שעה'] || '').split(':').pop()) || 0;
+    activityLevel = Math.min(10, Math.max(1, Math.round(sec / 6)));
+  }).catch(function() {
+    activityLevel = Math.floor(Math.random() * 5) + 1;
   });
 }
 
+function buildMap() {
+  var map = document.getElementById('map3d');
+  map.innerHTML = '';
+
+  // קשרים
+  LINKS.forEach(function(link, li) {
+    var a = KONDENSAIM[link[0]];
+    var b = KONDENSAIM[link[1]];
+    var dx = b.x - a.x;
+    var dy = b.y - a.y;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    var line = document.createElement('div');
+    line.className = 'map3d-link';
+    line.id = 'link-' + li;
+    line.style.cssText = 'left:' + a.x + '%;top:' + a.y + '%;width:' + len + '%;transform:rotate(' + angle + 'deg)';
+    map.appendChild(line);
+  });
+
+  // צמתים
+  KONDENSAIM.forEach(function(k, i) {
+    var node = document.createElement('div');
+    node.className = 'map3d-node';
+    node.id = 'knode-' + i;
+    node.style.cssText = 'left:calc(' + k.x + '% - 45px);top:calc(' + k.y + '% - 45px);transform:translateZ(0px)';
+    node.innerHTML =
+      '<div class="n-icon">' + k.icon + '</div>' +
+      '<div class="n-name">' + k.name + '</div>' +
+      '<div class="n-status" id="kstat-' + i + '"></div>';
+    map.appendChild(node);
+  });
+}
+
+function updateShadow() {
+  var activeCount = Math.max(1, Math.round(activityLevel * KONDENSAIM.length / 10));
+
+  KONDENSAIM.forEach(function(k, i) {
+    if (!shadowState[i] || Math.random() < 0.35) {
+      shadowState[i] = Math.floor(Math.random() * k.states.length);
+    }
+    var stateIdx = shadowState[i];
+    var isActive = i < activeCount && (stateIdx === 1 || stateIdx === 2);
+
+    var node = document.getElementById('knode-' + i);
+    var stat = document.getElementById('kstat-' + i);
+    if (!node || !stat) return;
+
+    if (isActive) {
+      node.classList.add('active');
+      node.style.transform = 'translateZ(' + (10 + Math.random() * 25) + 'px)';
+    } else {
+      node.classList.remove('active');
+      node.style.transform = 'translateZ(0px)';
+    }
+    stat.textContent = k.states[stateIdx];
+  });
+
+  // קשרים מוארים
+  LINKS.forEach(function(link, li) {
+    var el = document.getElementById('link-' + li);
+    if (!el) return;
+    var a = document.getElementById('knode-' + link[0]);
+    var b = document.getElementById('knode-' + link[1]);
+    if (a && b && a.classList.contains('active') && b.classList.contains('active')) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+}
+
+buildMap();
 updateShadow();
-setInterval(updateShadow, 4000);
+fetchActivityLevel();
+setInterval(updateShadow, 3500);
+setInterval(fetchActivityLevel, 8000);
 
 // ═══ חוץ — שליחת פרטים ═══
 function sendHutz() {
