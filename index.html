@@ -455,6 +455,15 @@
 
     async function pullDirection() {
       let lastError = 'אין מענה';
+      try {
+        const published = await fetch('/state.json?v=' + Date.now());
+        if (published.ok) {
+          const packet = await jsonOrThrow(published);
+          STATE.source = 'PUBLISHED';
+          lockRoute(normalize(packet));
+          return;
+        }
+      } catch (_) {}
       for (const base of candidates()) {
         try {
           let response = await fetch((base ? base : '') + '/api/אחוד?פעולה=צפה');
