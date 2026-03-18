@@ -229,14 +229,16 @@ function cws() {
 
 async function ld() {
   try {
-    var ps = [http('/api/שעה').then(function(r){return r.json();})];
-    if (S.user) ps.push(http('/api/צפה-מבקש?' + new URLSearchParams({
-      'משתמש': S.user, 'דף': 'פיתוח',
-      'רוחב': String(S.viewport.w), 'גובה': String(S.viewport.h),
-    })).then(function(r){return r.json();}));
+    var ps = [
+      http('/api/שעה').then(function(r){return r.json();}),
+      http('/api/ספריה').then(function(r){return r.json();}),
+    ];
     var r = await Promise.all(ps);
     S.time = r[0]['שעה'] || '';
-    if (r[1]) { S.requests = r[1]['בקשות'] || []; S.done = r[1]['בוצעו'] || []; }
+    var spr = r[1] || {};
+    var tor = spr['תור'] || {};
+    S.requests = tor['בקשות'] || [];
+    S.done = tor['בוצעו'] || [];
   } catch(_) {}
   rn();
 }
@@ -335,6 +337,8 @@ document.getElementById('btn-rogez').addEventListener('click', async function() 
 });
 
 ld(); cws(); rn();
+// זמן אמת — רענון כל 3 שניות
+setInterval(ld, 3000);
 </script>
 </body>
 </html>
