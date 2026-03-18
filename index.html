@@ -284,6 +284,8 @@ function sendHutz() {
   var name = (document.getElementById('hutz-name').value || '').trim() || 'אורח';
   var subject = document.getElementById('hutz-subject').value.trim();
   var detail = document.getElementById('hutz-detail').value.trim();
+  // שם מוכר — נכנס
+  tryEnter(name);
   if (!subject) return;
   var text = subject + (detail ? ' — ' + detail : '');
   var base = (new URLSearchParams(location.search).get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
@@ -299,21 +301,25 @@ function sendHutz() {
   setTimeout(function() { msg.classList.add('hidden'); }, 3000);
 }
 
-// ═══ הקרנה ═══
+// ═══ זיהוי ═══
 
+var _known = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+
+function tryEnter(name) {
+  if (!name) return;
+  localStorage.setItem('sulha_user', JSON.stringify(name));
+  if (_known.indexOf(name) >= 0) {
+    window.location.href = '/p.html';
+  }
+}
+
+// שם שנשמר בעבר
 (function() {
   var saved = null;
   try { saved = JSON.parse(localStorage.getItem('sulha_user') || 'null'); } catch(_) {}
-  var q = new URLSearchParams(location.search);
-  var p = q.get('k');
-  if (p) {
-    var m = {'עדי': 'עובדיה עדי כהן', 'שחף': 'שחף גליה כהן'};
-    if (m[p]) { saved = m[p]; localStorage.setItem('sulha_user', JSON.stringify(saved)); }
+  if (saved && _known.indexOf(saved) >= 0) {
+    window.location.href = '/p.html';
   }
-  if (!saved) return;
-  var allowed = ['עובדיה עדי כהן', 'שחף גליה כהן'];
-  if (allowed.indexOf(saved) < 0) return;
-  window.location.href = '/p.html';
 })();
 </script>
 </body>
