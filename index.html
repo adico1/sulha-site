@@ -12,210 +12,238 @@
       --line: rgba(231, 239, 230, .12);
       --accent: #9ae2b0;
       --panel: rgba(10, 17, 19, .78);
-      --warn: #f3c67d;
     }
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; }
     html, body {
-      margin: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at top left, rgba(154,226,176,.08), transparent 24%),
-        linear-gradient(180deg, #081012, var(--bg));
+      min-height: 100vh;
+      background: var(--bg);
       color: var(--fg);
       font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
     }
-    #app {
-      min-height: 100vh;
-      padding: 16px;
-    }
-    .shell {
+    body { padding: 16px; }
+    .hidden { display: none !important; }
+
+    /* ═══ כניסה ═══ */
+    #login-page {
       min-height: calc(100vh - 32px);
+      display: grid;
+      place-items: center;
+    }
+    .login-box {
+      width: min(420px, 100%);
       border: 1px solid var(--line);
       border-radius: 24px;
       background: var(--panel);
-      backdrop-filter: blur(14px);
+      padding: 48px 32px;
       display: grid;
-      grid-template-rows: auto auto 1fr;
-      overflow: hidden;
+      gap: 20px;
+      text-align: center;
     }
-    .bar {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .status {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .chip {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      color: var(--accent);
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      min-height: 0;
-      flex: 1;
-    }
-    .view {
-      padding: 18px;
-      min-height: 0;
-      overflow: auto;
-    }
-    .side {
-      border-inline-start: 1px solid var(--line);
-      padding: 18px;
-      display: grid;
-      grid-template-rows: auto auto auto 1fr;
-      gap: 14px;
-      min-height: 0;
-    }
-    .box {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      background: rgba(255,255,255,.02);
-    }
-    .box h3 {
-      margin: 0 0 10px;
-      color: var(--accent);
-      font-size: 14px;
-    }
+    .login-box h1 { font-size: 32px; color: var(--accent); }
+    .login-box p { color: var(--muted); font-size: 14px; }
     .input {
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 14px;
       background: rgba(255,255,255,.03);
       color: var(--fg);
-      padding: 12px 14px;
+      padding: 14px 16px;
       font: inherit;
+      font-size: 16px;
       outline: none;
+      text-align: center;
     }
-    .actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 10px 14px;
-      background: var(--accent);
-      color: #102016;
-      font: inherit;
+    .input:focus { border-color: var(--accent); }
+    .btn {
+      border: 0; border-radius: 999px;
+      padding: 14px 20px;
+      background: var(--accent); color: #102016;
+      font: inherit; font-size: 16px; font-weight: 600;
       cursor: pointer;
     }
-    button.alt {
-      background: #dfe9dd;
-    }
-    #screens {
-      display: grid;
-      gap: 14px;
-    }
-    .screen {
+    .btn:hover { opacity: .85; }
+    .login-error { color: #e55; font-size: 13px; min-height: 1.4em; }
+
+    /* ═══ פנים (הממשק המלא) ═══ */
+    .shell {
+      min-height: calc(100vh - 32px);
       border: 1px solid var(--line);
-      border-radius: 20px;
+      border-radius: 24px;
+      background: var(--panel);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
       overflow: hidden;
-      background: rgba(255,255,255,.02);
+    }
+    .bar {
+      display: flex; gap: 12px; align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted); font-size: 13px;
+    }
+    .status { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .chip {
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--line); color: var(--accent);
+    }
+    .layout {
+      display: grid; grid-template-columns: minmax(0, 1fr) 360px;
+      min-height: 0; flex: 1;
+    }
+    .view { padding: 18px; min-height: 0; overflow: auto; }
+    .side {
+      border-inline-start: 1px solid var(--line);
+      padding: 18px;
+      display: grid; grid-template-rows: auto auto 1fr;
+      gap: 14px; min-height: 0;
+    }
+    .box {
+      border: 1px solid var(--line); border-radius: 18px;
+      padding: 14px; background: rgba(255,255,255,.02);
+    }
+    .box h3 { margin: 0 0 10px; color: var(--accent); font-size: 14px; }
+    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    button {
+      border: 0; border-radius: 999px; padding: 10px 14px;
+      background: var(--accent); color: #102016;
+      font: inherit; cursor: pointer;
+    }
+    button.alt { background: #dfe9dd; }
+    #screens { display: grid; gap: 14px; }
+    .screen {
+      border: 1px solid var(--line); border-radius: 20px;
+      overflow: hidden; background: rgba(255,255,255,.02);
     }
     .screen-head {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display: flex; gap: 10px; align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 13px;
+      padding: 12px 14px; border-bottom: 1px solid var(--line);
+      color: var(--muted); font-size: 13px;
     }
-    .screen-body {
-      padding: 14px;
-      display: grid;
-      gap: 10px;
-    }
-    .line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 2px;
-      align-items: center;
-      min-height: 24px;
-    }
+    .screen-body { padding: 14px; display: grid; gap: 10px; }
+    .line { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; min-height: 24px; }
     .glyph {
-      display: inline-grid;
-      place-items: center;
-      min-width: 1ch;
-      min-height: 1.6em;
-      padding-inline: .08em;
-      border-radius: 6px;
-      position: relative;
+      display: inline-grid; place-items: center;
+      min-width: 1ch; min-height: 1.6em; padding-inline: .08em;
+      border-radius: 6px; position: relative;
     }
-    .glyph[data-kind="space"] {
-      opacity: .35;
-    }
-    .glyph::after {
-      content: attr(data-address);
-      position: absolute;
-      inset-inline-start: 50%;
-      bottom: calc(100% + 3px);
-      transform: translateX(-50%);
-      padding: 2px 6px;
-      border-radius: 999px;
-      background: #0b1517;
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 10px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-    }
-    .glyph:hover::after {
-      opacity: 1;
-    }
-    .list {
-      display: grid;
-      gap: 8px;
-      max-height: 100%;
-      overflow: auto;
-    }
+    .glyph[data-kind="space"] { opacity: .35; }
+    .glyph:hover { background: rgba(154,226,176,.12); }
+    .list { display: grid; gap: 8px; max-height: 100%; overflow: auto; }
     .item {
+      border: 1px solid var(--line); border-radius: 14px;
+      padding: 10px 12px; font-size: 13px;
+    }
+    .empty { color: var(--muted); }
+
+    /* ═══ חוץ ═══ */
+    .hutz-shell {
+      min-height: calc(100vh - 32px);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-size: 13px;
+      border-radius: 24px;
+      background: var(--panel);
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      overflow: hidden;
     }
-    .empty {
-      color: var(--muted);
+    .hutz-welcome { padding: 32px 24px; text-align: center; }
+    .hutz-welcome h2 { color: var(--accent); font-size: 22px; margin-bottom: 8px; }
+    .hutz-welcome p { color: var(--muted); font-size: 14px; }
+    .hutz-body { padding: 18px 24px; display: grid; gap: 18px; align-content: start; overflow: auto; }
+    .hutz-section {
+      border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px; background: rgba(255,255,255,.02);
     }
-    #decider-panel[hidden] {
-      display: none;
+    .hutz-section h3 { color: var(--accent); font-size: 14px; margin-bottom: 10px; }
+    .hutz-form { display: grid; gap: 10px; }
+    .hutz-form label { font-size: 13px; color: var(--muted); }
+    .hutz-form .input { text-align: start; font-size: 14px; padding: 10px 14px; }
+    .hutz-form textarea.input { min-height: 80px; resize: vertical; }
+    .hutz-form .btn { font-size: 14px; padding: 10px 16px; justify-self: start; }
+    .hutz-shadow {
+      border: 1px solid var(--line); border-radius: 18px;
+      padding: 16px; background: rgba(154,226,176,.03);
     }
-    #version-flash {
-      color: var(--warn);
-      min-height: 1.2em;
+    .hutz-shadow h3 { color: var(--accent); font-size: 14px; margin-bottom: 10px; }
+    .shadow-line {
+      padding: 6px 0; font-size: 13px; color: var(--muted);
+      border-bottom: 1px solid var(--line);
     }
+    .shadow-line:last-child { border-bottom: 0; }
+    .shadow-pulse {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--accent);
+      margin-inline-end: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:.3; } 50% { opacity:1; } }
+    .hutz-footer {
+      padding: 14px 18px; border-top: 1px solid var(--line);
+      font-size: 12px; color: var(--muted); text-align: center;
+    }
+    .link-btn {
+      background: none; border: 0; color: var(--muted);
+      cursor: pointer; font: inherit; font-size: 12px; text-decoration: underline;
+    }
+    .sent-msg { color: var(--accent); font-size: 13px; }
+
     @media (max-width: 960px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-      .side {
-        border-inline-start: 0;
-        border-top: 1px solid var(--line);
-      }
+      .layout { grid-template-columns: 1fr; }
+      .side { border-inline-start: 0; border-top: 1px solid var(--line); }
     }
   </style>
 </head>
 <body>
-  <div id="app">
+
+  <!-- ═══ דף כניסה ═══ -->
+  <div id="login-page">
+    <div class="login-box">
+      <h1>סולחא</h1>
+      <p>תקשורת אחודה</p>
+      <input id="login-name" class="input" type="text" placeholder="שם מלא" autofocus>
+      <button class="btn" onclick="doLogin()">כניסה</button>
+      <div id="login-error" class="login-error"></div>
+    </div>
+  </div>
+
+  <!-- ═══ מערכת חוץ ═══ -->
+  <div id="hutz-page" class="hutz-shell hidden">
+    <div class="bar">
+      <div class="status">
+        <span class="chip" id="hutz-user">אורח</span>
+        <span class="chip" id="hutz-time">...</span>
+      </div>
+      <div>
+        סולחא · חוץ
+        <button class="link-btn" onclick="doLogout()" style="margin-inline-start:12px">יציאה</button>
+      </div>
+    </div>
+    <div class="hutz-welcome">
+      <h2 id="hutz-greeting">שלום</h2>
+      <p>ברוכים הבאים למערכת סולחא. כאן תוכלו לשלוח בקשות ולעקוב אחרי מה שקורה.</p>
+    </div>
+    <div class="hutz-body">
+      <div class="hutz-section">
+        <h3>שלח בקשה</h3>
+        <div class="hutz-form">
+          <label>נושא</label>
+          <input id="hutz-subject" class="input" type="text" placeholder="במה אפשר לעזור?">
+          <label>פירוט</label>
+          <textarea id="hutz-detail" class="input" placeholder="תאר בקצרה..."></textarea>
+          <button class="btn" onclick="sendHutz()">שלח</button>
+          <div id="hutz-sent" class="sent-msg hidden">הבקשה נשלחה</div>
+        </div>
+      </div>
+      <div class="hutz-shadow">
+        <h3><span class="shadow-pulse"></span>מה קורה עכשיו</h3>
+        <div id="shadow-feed"><div class="shadow-line">טוען...</div></div>
+      </div>
+    </div>
+    <div class="hutz-footer">סולחא · תקשורת אחודה</div>
+  </div>
+
+  <!-- ═══ מערכת פנים ═══ -->
+  <div id="pnim-page" class="hidden">
     <div class="shell">
       <div class="bar">
         <div class="status">
@@ -225,10 +253,7 @@
         </div>
         <div id="status-meta">סולחא.com</div>
       </div>
-      <div class="bar">
-        <div id="status-note">צפה פנים ממיר ממתין לכיוון.</div>
-        <div id="version-flash"></div>
-      </div>
+      <div class="bar" id="status-note">צפה פנים ממיר ממתין לכיוון.</div>
       <div class="layout">
         <main class="view">
           <div id="screens"></div>
@@ -239,13 +264,8 @@
             <input id="request-input" class="input" type="text" placeholder="בקש כיוון">
             <div class="actions">
               <button id="send-btn">שלח</button>
-            </div>
-          </section>
-          <section class="box" id="decider-panel" hidden>
-            <h3>מכריע</h3>
-            <div id="decider-list" class="list"></div>
-            <div class="actions">
               <button id="approve-btn" class="alt">אשר</button>
+              <button id="rogez-btn" style="background:#c44;color:#fff">רוגז</button>
             </div>
           </section>
           <section class="box">
@@ -260,311 +280,459 @@
       </div>
     </div>
   </div>
-  <script>
-    const STATE = {
-      route: null,
-      locked: false,
-      lastVersion: '',
-      source: '',
-      apiBase: '',
-    };
 
-    function baseUrl() {
-      const q = new URLSearchParams(location.search);
-      const explicit = q.get('api') || localStorage.getItem('sulha_unified_api') || window.SULHA_UNIFIED_API || '';
-      return explicit ? String(explicit).replace(/\/$/, '') : '';
+<script>
+// ═══════════════════════════════════════
+// סולחא · דף אחד · כניסה + פנים + חוץ
+// ═══════════════════════════════════════
+
+const PNIM_USERS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+
+// ═══ תקשורת ═══
+function baseUrl() {
+  const q = new URLSearchParams(location.search);
+  return (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
+}
+function http(path, opts) { return fetch((baseUrl() || '') + path, opts); }
+
+function isPnim(name) { return PNIM_USERS.indexOf(name) >= 0; }
+
+// ═══ כניסה ═══
+function doLogin() {
+  const input = document.getElementById('login-name');
+  const name = (input.value || '').trim();
+  if (!name) {
+    document.getElementById('login-error').textContent = 'הכנס שם מלא';
+    return;
+  }
+  localStorage.setItem('sulha_user', JSON.stringify(name));
+  if (isPnim(name)) {
+    showPnim(name);
+  } else {
+    showHutz(name);
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('sulha_user');
+  S.user = null; S.page = 'אתר';
+  document.getElementById('login-page').classList.remove('hidden');
+  document.getElementById('pnim-page').classList.add('hidden');
+  document.getElementById('hutz-page').classList.add('hidden');
+  document.getElementById('login-name').value = '';
+}
+
+document.getElementById('login-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ═══ חוץ ═══
+let _shadowInterval = null;
+
+function showHutz(name) {
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('pnim-page').classList.add('hidden');
+  document.getElementById('hutz-page').classList.remove('hidden');
+  document.getElementById('hutz-user').textContent = name;
+  document.getElementById('hutz-greeting').textContent = 'שלום, ' + name;
+  loadShadow();
+  if (_shadowInterval) clearInterval(_shadowInterval);
+  _shadowInterval = setInterval(loadShadow, 5000);
+}
+
+function sendHutz() {
+  const name = JSON.parse(localStorage.getItem('sulha_user') || '""');
+  const subject = document.getElementById('hutz-subject').value.trim();
+  const detail = document.getElementById('hutz-detail').value.trim();
+  if (!subject) return;
+  const text = subject + (detail ? ' — ' + detail : '');
+  http('/api/אחוד', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({'מי': name || 'אורח', 'מה': text, 'פעולה': 'בקשה', 'ממשק': 'חוץ', 'דף': 'חוץ', 'משתמש': name || 'אורח'})
+  }).catch(function(){});
+  document.getElementById('hutz-subject').value = '';
+  document.getElementById('hutz-detail').value = '';
+  var msg = document.getElementById('hutz-sent');
+  msg.classList.remove('hidden');
+  setTimeout(function() { msg.classList.add('hidden'); }, 3000);
+}
+
+function loadShadow() {
+  var feed = document.getElementById('shadow-feed');
+  var lines = [];
+
+  Promise.all([
+    http('/api/שעה').then(function(r){return r.json();}).catch(function(){return {};}),
+    http('/api/צפה').then(function(r){return r.json();}).catch(function(){return {};}),
+    http('/api/תור').then(function(r){return r.json();}).catch(function(){return {};})
+  ]).then(function(results) {
+    var timeRes = results[0];
+    var viewRes = results[1];
+    var qRes = results[2];
+
+    var now = timeRes['שעה'] || '';
+    if (now) {
+      var t = now.split('T')[1].split('.')[0];
+      lines.push('שעה: ' + t);
     }
 
-    function wsUrl() {
-      const q = new URLSearchParams(location.search);
-      const explicit = q.get('ws') || localStorage.getItem('sulha_ws') || window.SULHA_WS || '';
-      return explicit ? String(explicit) : '';
-    }
-
-    function http(path, opts) {
-      const base = STATE.apiBase || baseUrl();
-      return fetch((base ? base : '') + path, opts);
-    }
-
-    function candidates() {
-      const explicit = baseUrl();
-      const list = [];
-      if (explicit) list.push(explicit);
-      list.push('');
-      list.push('http://127.0.0.1:8771');
-      list.push('http://127.0.0.1:8781');
-      return [...new Set(list)];
-    }
-
-    async function jsonOrThrow(response) {
-      const text = await response.text();
-      try {
-        return JSON.parse(text);
-      } catch (_) {
-        throw new Error(text.slice(0, 120) || 'bad-json');
-      }
-    }
-
-    function makeAddress(screenId, lineIndex, glyphIndex, char) {
-      return {
-        address: `${screenId}/${lineIndex}/${glyphIndex}`,
-        kind: char === ' ' ? 'space' : 'glyph',
-      };
-    }
-
-    function glyphNode(screenId, lineIndex, glyphIndex, char) {
-      const meta = makeAddress(screenId, lineIndex, glyphIndex, char);
-      const span = document.createElement('span');
-      span.className = 'glyph';
-      span.dataset.address = meta.address;
-      span.dataset.kind = meta.kind;
-      span.textContent = char === ' ' ? '·' : char;
-      return span;
-    }
-
-    function linesFrom(screen) {
-      if (Array.isArray(screen.lines) && screen.lines.length) return screen.lines;
-      if (typeof screen.text === 'string') return screen.text.split(/\r?\n/);
-      if (typeof screen.body === 'string') return screen.body.split(/\r?\n/);
-      return [''];
-    }
-
-    function screenNode(screen, idx) {
-      const id = screen.id || `screen-${idx}`;
-      const root = document.createElement('section');
-      root.className = 'screen';
-      const head = document.createElement('div');
-      head.className = 'screen-head';
-      head.innerHTML = `<span>${screen.title || id}</span><span>${screen.mode || 'צפה'}</span>`;
-      const body = document.createElement('div');
-      body.className = 'screen-body';
-      linesFrom(screen).forEach((line, lineIndex) => {
-        const row = document.createElement('div');
-        row.className = 'line';
-        Array.from(line || '').forEach((char, glyphIndex) => {
-          row.appendChild(glyphNode(id, lineIndex, glyphIndex, char));
-        });
-        if (!line) row.appendChild(glyphNode(id, lineIndex, 0, ' '));
-        body.appendChild(row);
-      });
-      root.append(head, body);
-      return root;
-    }
-
-    function renderScreens(route) {
-      const mount = document.getElementById('screens');
-      mount.innerHTML = '';
-      const screens = Array.isArray(route.screens) ? route.screens : [];
-      if (!screens.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'אין צפה פעילה.';
-        mount.appendChild(empty);
-        return;
-      }
-      screens.forEach((screen, idx) => mount.appendChild(screenNode(screen, idx)));
-    }
-
-    function renderList(id, rows) {
-      const root = document.getElementById(id);
-      root.innerHTML = '';
-      if (!rows.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'אין';
-        root.appendChild(empty);
-        return;
-      }
-      rows.forEach((row) => {
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.textContent = row;
-        root.appendChild(div);
+    var records = (viewRes['שנה'] && viewRes['שנה']['רשומות']) || viewRes['רשומות'] || [];
+    var recent = records.slice(-6);
+    if (recent.length > 0) {
+      lines.push('פעילות אחרונה:');
+      recent.forEach(function(r) {
+        lines.push('  ' + (r['מי'] || '?') + ' · ' + (r['מה'] || '').substring(0, 40));
       });
     }
 
-    function renderDecider(route) {
-      const panel = document.getElementById('decider-panel');
-      const rows = Array.isArray(route.decider) ? route.decider : [];
-      panel.hidden = !rows.length;
-      renderList('decider-list', rows);
+    var pending = ((qRes['בקשות'] || []).filter(function(b) { return b['מצב'] !== 'בוצע'; }));
+    var done = qRes['בוצעו'] || [];
+    if (pending.length || done.length) {
+      lines.push('בקשות פתוחות: ' + pending.length);
+      lines.push('בקשות שבוצעו: ' + done.length);
     }
 
-    function flashVersion(version) {
-      if (!version || version === STATE.lastVersion) return;
-      const root = document.getElementById('version-flash');
-      root.textContent = `גרסה חדשה: ${version}`;
-      root.animate(
-        [{ opacity: 0.15, transform: 'scale(0.98)' }, { opacity: 1, transform: 'scale(1)' }],
-        { duration: 600, iterations: 4, direction: 'alternate' }
-      );
-      if ('Notification' in window && Notification.permission === 'granted') {
-        try {
-          new Notification('סולחא', { body: `עודכנה גרסה ${version}` });
-        } catch (_) {}
-      }
-    }
+    if (lines.length === 0) lines.push('המערכת פעילה');
 
-    function lockRoute(route) {
-      if (!route) return;
-      flashVersion(route.version || '');
-      STATE.route = route;
-      STATE.locked = !!route.locked;
-      STATE.lastVersion = route.version || '';
-      document.getElementById('status-mode').textContent = route.mode || 'הווה';
-      document.getElementById('status-route').textContent = `כיוון: ${STATE.locked ? 'נעול' : 'פתוח'}`;
-      document.getElementById('status-source').textContent = `תקשורת: ${STATE.source || 'אחודה'}`;
-      document.getElementById('status-note').textContent = route.note || 'הכיוון התקבל.';
-      document.getElementById('status-meta').textContent = route.meta || 'סולחא.com';
-      renderScreens(route);
-      renderDecider(route);
-      renderList('route-meta', [
-        `גרסה: ${route.version || '-'}`,
-        `מבקש: ${route.actor || 'עובדיה עדי כהן'}`,
-        `צומת: ${(route.nodes || []).join(' -> ') || 'אין'}`,
-      ]);
-      renderList('log-list', (route.log || []).slice(-12));
-    }
-
-    function normalize(packet) {
-      const screenText = packet && packet.צפה && typeof packet.צפה.טקסט === 'string'
-        ? packet.צפה.טקסט
-        : packet && packet.תוצאה && packet.תוצאה.טקסט
-          ? packet.תוצאה.טקסט
-          : packet && packet.שיחה && packet.שיחה.טקסט
-            ? packet.שיחה.טקסט
-            : '';
-      return {
-        mode: packet.mode || packet.מצב || 'הווה',
-        locked: packet.locked ?? packet.נעול ?? true,
-        version: packet.version || packet.שעה || '',
-        actor: packet.מי || 'עובדיה עדי כהן',
-        meta: packet.meta || packet.שם_במה || 'סולחא.com',
-        note: packet.note || packet.תזכורת || 'כיוון התקבל מן התקשורת האחודה.',
-        nodes: packet.nodes || packet.צמתים || ['מבקש', 'אברהם', 'סולחא'],
-        log: packet.log || packet.רשומות || [],
-        decider: packet.decider || packet.מכריע || [],
-        screens: packet.screens || packet.צפות || [{
-          id: 'primary',
-          title: packet.title || 'צפה ראשית',
-          text: screenText || JSON.stringify(packet, null, 2),
-          mode: packet.kind || 'אחוד',
-        }],
-      };
-    }
-
-    async function pullDirection() {
-      let lastError = 'אין מענה';
-      try {
-        const published = await fetch('/state.json?v=' + Date.now());
-        if (published.ok) {
-          const packet = await jsonOrThrow(published);
-          STATE.source = 'PUBLISHED';
-          lockRoute(normalize(packet));
-          return;
-        }
-      } catch (_) {}
-      for (const base of candidates()) {
-        try {
-          let response = await fetch((base ? base : '') + '/api/אחוד?פעולה=צפה');
-          if (response.ok) {
-            STATE.apiBase = base;
-            STATE.source = base ? `HTTP ${base}` : 'HTTP';
-            lockRoute(normalize(await jsonOrThrow(response)));
-            return;
-          }
-          response = await fetch((base ? base : '') + '/api/מצב');
-          if (response.ok) {
-            STATE.apiBase = base;
-            STATE.source = base ? `HTTP ${base}` : 'HTTP';
-            lockRoute(normalize(await jsonOrThrow(response)));
-            return;
-          }
-          lastError = `${response.status}`;
-        } catch (error) {
-          lastError = String(error.message || error);
-        }
-      }
-      throw new Error(lastError);
-    }
-
-    async function sendRequest(kind) {
-      const input = document.getElementById('request-input');
-      const text = input.value.trim();
-      if (!text && kind !== 'אשר') return;
-      let packet = null;
-      let lastError = 'אין מענה';
-      for (const base of candidates()) {
-        try {
-          const body = JSON.stringify({
-            מי: 'עובדיה עדי כהן',
-            מה: text || 'אשר',
-            טקסט: text || 'אשר',
-            פעולה: kind,
-            ממשק: 'סולחא.com',
-            דף: 'ראשי',
-          });
-          let response = await fetch((base ? base : '') + '/api/אחוד', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body,
-          });
-          if (response.ok) {
-            packet = await jsonOrThrow(response);
-            STATE.apiBase = base;
-            break;
-          }
-          response = kind === 'אשר'
-            ? await fetch((base ? base : '') + '/api/אשר', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
-            : await fetch((base ? base : '') + '/api/שיחה', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ טקסט: text, מאת: 'עובדיה עדי כהן' }),
-              });
-          if (response.ok) {
-            packet = await jsonOrThrow(response);
-            STATE.apiBase = base;
-            break;
-          }
-          lastError = `${response.status}`;
-        } catch (error) {
-          lastError = String(error.message || error);
-        }
-      }
-      if (!packet) throw new Error(lastError);
-      STATE.source = STATE.apiBase ? `HTTP ${STATE.apiBase}` : 'HTTP';
-      lockRoute(normalize(packet));
-      input.value = '';
-    }
-
-    function connectWs() {
-      const url = wsUrl();
-      if (!url) return;
-      try {
-        const ws = new WebSocket(url);
-        ws.onopen = () => { STATE.source = 'WS'; };
-        ws.onmessage = (event) => {
-          try {
-            const packet = JSON.parse(event.data);
-            lockRoute(normalize(packet));
-          } catch (_) {}
-        };
-      } catch (_) {}
-    }
-
-    document.getElementById('send-btn').addEventListener('click', () => sendRequest('בקש'));
-    document.getElementById('approve-btn').addEventListener('click', () => sendRequest('אשר'));
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().catch(() => {});
-    }
-    pullDirection().catch((error) => {
-      lockRoute(normalize({
-        note: `התקשורת האחודה לא ענתה: ${String(error.message || error)}`,
-        log: ['רוגז: אין מענה מן התקשורת האחודה'],
-        screens: [{ title: 'רוגז', text: 'אין מענה מן התקשורת האחודה' }],
-      }));
+    feed.innerHTML = '';
+    lines.forEach(function(l) {
+      var div = document.createElement('div');
+      div.className = 'shadow-line';
+      div.textContent = l;
+      feed.appendChild(div);
     });
-    connectWs();
-  </script>
+  }).catch(function() {
+    feed.innerHTML = '<div class="shadow-line">המערכת פעילה · אין חיבור לשרת כרגע</div>';
+  });
+}
+
+// ═══════════════════════════════════════
+// פנים — הממשק המלא (כמו שהיה)
+// ═══════════════════════════════════════
+
+const ADMINS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+
+const S = {
+  user: null,
+  page: 'אתר',
+  sub: null,
+  route: null,
+  source: '',
+  time: '',
+  requests: [],
+  done: [],
+  ws: null,
+  connected: false,
+  viewport: {w: innerWidth, h: innerHeight},
+  sent: {},
+};
+
+const PAGES = {
+  'אתר':   {title: 'סולחא', auth: false},
+  'פנים':  {title: 'פנים', auth: true},
+  'ניהול': {title: 'ניהול', auth: true, admin: true},
+  'ליבה':  {title: 'ליבה', auth: true, admin: true},
+};
+
+function showPnim(name) {
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('hutz-page').classList.add('hidden');
+  document.getElementById('pnim-page').classList.remove('hidden');
+  S.user = name;
+  S.page = 'פנים';
+  loadData();
+  connectWs();
+  render();
+}
+
+function connectWs() {
+  var q = new URLSearchParams(location.search);
+  var explicit = q.get('ws') || localStorage.getItem('sulha_ws') || '';
+  var host = location.hostname;
+  if (!explicit && host !== 'localhost' && host !== '127.0.0.1' && !host.startsWith('192.168.')) return;
+  var url = explicit || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + host + ':8772');
+  try {
+    S.ws = new WebSocket(url);
+    S.ws.onopen = function() { S.connected = true; S.source = 'WS'; render(); };
+    S.ws.onclose = function() { S.connected = false; render(); };
+    S.ws.onmessage = function(e) {
+      try {
+        var d = JSON.parse(e.data);
+        if (d['מה'] === 'צפה_אחודה' || d['מה'] === 'מבקש') loadData();
+      } catch(_) {}
+    };
+  } catch(_) {}
+}
+
+async function loadData() {
+  try {
+    var ps = [http('/api/שעה').then(function(r){return r.json();})];
+    if (S.user) ps.push(http('/api/צפה-מבקש?' + new URLSearchParams({
+      'משתמש': S.user,
+      'דף': isAdmin() ? 'פיתוח' : 'משתמש',
+      'רוחב': String(S.viewport.w),
+      'גובה': String(S.viewport.h),
+    })).then(function(r){return r.json();}));
+    var r = await Promise.all(ps);
+    S.time = r[0]['שעה'] || '';
+    if (r[1]) { S.requests = r[1]['בקשות'] || []; S.done = r[1]['בוצעו'] || []; }
+  } catch(_) {}
+  render();
+}
+
+async function sendRequest(kind) {
+  var input = document.getElementById('request-input');
+  var text = (input.value || '').trim();
+  if (!text) return;
+  var key = (S.user || '?') + '|' + kind + '|' + text;
+  if (S.sent[key]) {
+    http('/api/אחוד', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({'מי': 'רוגז', 'מה': 'לולאה: ' + key, 'פעולה': 'רוגז', 'ממשק': 'סולחא.com', 'דף': S.page})
+    });
+    return;
+  }
+  S.sent[key] = true;
+  await http('/api/אחוד', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      'מי': S.user || 'עובדיה עדי כהן',
+      'מה': text, 'פעולה': kind,
+      'ממשק': 'סולחא.com',
+      'דף': S.page
+    })
+  }).then(function(r){return r.json();}).then(function(p) { S.source = 'HTTP'; });
+  input.value = '';
+  await loadData();
+}
+
+async function redoReq(num, direction) {
+  if (!S.user) return;
+  var key = S.user + '|redo|' + num + '|' + direction;
+  if (S.sent[key]) {
+    http('/api/אחוד', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({'מי': 'רוגז', 'מה': 'לולאה: ' + key, 'פעולה': 'רוגז', 'ממשק': 'סולחא.com', 'דף': S.page})
+    });
+    return;
+  }
+  S.sent[key] = true;
+  await http('/api/מבקש/בצע-מחדש', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({'משתמש': S.user, 'מספר': num, 'כיוון': direction})
+  });
+  await loadData();
+}
+
+function isAdmin() { return ADMINS.indexOf(S.user) >= 0; }
+
+function nav(page) {
+  var p = PAGES[page];
+  if (!p) return;
+  if (p.auth && !S.user) return;
+  if (p.admin && !isAdmin()) return;
+  S.page = page; S.sub = null; render();
+}
+
+function showSub(name) { S.sub = name; render(); }
+function hideSub() { S.sub = null; render(); }
+
+function glyphNode(screenId, li, gi, ch) {
+  var span = document.createElement('span');
+  span.className = 'glyph';
+  span.dataset.address = screenId + '/' + li + '/' + gi;
+  span.dataset.kind = ch === ' ' ? 'space' : 'glyph';
+  span.textContent = ch === ' ' ? '\u00B7' : ch;
+  return span;
+}
+
+function screenNode(screen, idx) {
+  var id = screen.id || 'screen-' + idx;
+  var root = document.createElement('section');
+  root.className = 'screen';
+  var head = document.createElement('div');
+  head.className = 'screen-head';
+  head.innerHTML = '<span>' + (screen.title || id) + '</span><span>' + (screen.mode || 'צפה') + '</span>';
+  var body = document.createElement('div');
+  body.className = 'screen-body';
+  var lines = Array.isArray(screen.lines) ? screen.lines : (screen.text || screen.body || '').split(/\r?\n/);
+  lines.forEach(function(line, li) {
+    var row = document.createElement('div');
+    row.className = 'line';
+    Array.from(line || ' ').forEach(function(ch, gi) { row.appendChild(glyphNode(id, li, gi, ch)); });
+    body.appendChild(row);
+  });
+  root.append(head, body);
+  return root;
+}
+
+function renderScreens(screens) {
+  var mount = document.getElementById('screens');
+  mount.innerHTML = '';
+  if (!screens || !screens.length) {
+    mount.innerHTML = '<div class="empty">אין צפה פעילה.</div>';
+    return;
+  }
+  screens.forEach(function(s, i) { mount.appendChild(screenNode(s, i)); });
+}
+
+function renderList(id, rows) {
+  var el = document.getElementById(id);
+  el.innerHTML = '';
+  if (!rows.length) { el.innerHTML = '<div class="empty">אין</div>'; return; }
+  rows.forEach(function(r) { var d = document.createElement('div'); d.className = 'item'; d.textContent = r; el.appendChild(d); });
+}
+
+function computeView() {
+  S.viewport = {w: innerWidth, h: innerHeight};
+  var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
+  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
+
+  if (S.page === 'אתר') {
+    return [{
+      id: 'welcome', title: 'שלום עולם', mode: 'חוץ',
+      text: 'סולחא — תקשורת אחודה\n\nשלוש שכבות: ליבה, פנים, חוץ\n\n' + (S.user ? 'מחובר: ' + S.user : 'כנס למערכת')
+    }];
+  }
+
+  if (S.page === 'פנים') {
+    return [{
+      id: 'pnim', title: 'צפה פנים', mode: 'זמן אמת',
+      text: 'משתמש: ' + (S.user || '?') +
+        '\nבקשות פתוחות: ' + open.length +
+        '\nבוצעו: ' + S.done.length +
+        '\nשעה: ' + t +
+        '\nשטח: ' + S.viewport.w + 'x' + S.viewport.h
+    }];
+  }
+
+  if (S.page === 'ניהול') {
+    var all = [].concat(S.requests, S.done).sort(function(a,b) { return (a['מספר']||0)-(b['מספר']||0); });
+    var lines = all.slice(-15).map(function(r) {
+      var st = r['מצב'] === 'בוצע' ? '\u2713' : '\u2717';
+      return st + ' #' + (r['מספר']||'?') + ' ' + (r['מה']||'').substring(0,60);
+    });
+    return [{
+      id: 'nihul', title: 'ניהול', mode: 'בקשות: ' + all.length,
+      text: lines.join('\n') || 'אין בקשות'
+    }];
+  }
+
+  if (S.page === 'ליבה') {
+    return [{
+      id: 'liba', title: 'ליבה · צפה פנים', mode: 'אברהם מצייר',
+      text: 'סולחא · ליבה\nאברהם מצייר את הצפה\nתקשורת אחודה פעילה\nשעה: ' + t +
+        '\nמשתמש: ' + (S.user||'?') +
+        '\nשטח: ' + S.viewport.w + 'x' + S.viewport.h +
+        '\nבקשות: ' + (S.requests.length + S.done.length) +
+        '\nמחדלים: ' + open.length
+    }];
+  }
+
+  return [{id:'default',title:'צפה',text:'טוען...'}];
+}
+
+function renderSubMachria() {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:grid;place-items:center';
+  overlay.onclick = function(e) { if (e.target === overlay) hideSub(); };
+  var panel = document.createElement('div');
+  panel.style.cssText = 'background:var(--bg);border:1px solid var(--line);border-radius:20px;width:min(90vw,700px);max-height:80vh;overflow:auto;padding:20px';
+  panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="color:var(--accent)">מכריע — הכרעה</h3><button onclick="hideSub()" style="background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer">\u2715</button></div>';
+  panel.innerHTML += '<p style="color:var(--muted);font-size:13px;margin-bottom:14px">בדוק אם הבקשה בוצעה לשביעות רצונך.</p>';
+  if (!S.requests.length) {
+    panel.innerHTML += '<div class="empty">אין בקשות להכרעה</div>';
+  } else {
+    S.requests.forEach(function(r) {
+      var d = document.createElement('div');
+      d.className = 'item';
+      d.style.marginBottom = '8px';
+      var n = r['מספר'] || '?';
+      d.innerHTML = '<b style="color:var(--accent)">#' + n + '</b> ' + (r['מה']||'') +
+        '<br><span style="color:var(--muted);font-size:11px">' + (r['מצב']||'') + '</span>' +
+        '<div style="display:flex;gap:6px;margin-top:6px">' +
+        '<button onclick="redoReq(' + n + ',\'אושר\');hideSub()" style="font-size:11px;padding:6px 10px">אושר</button>' +
+        '<button onclick="redoReq(' + n + ',\'נדחה — ביצוע מחדש\');hideSub()" style="font-size:11px;padding:6px 10px;background:#c44;color:#fff">נדחה</button></div>';
+      panel.appendChild(d);
+    });
+  }
+  overlay.appendChild(panel);
+  return overlay;
+}
+
+function render() {
+  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
+  document.getElementById('status-mode').textContent = S.page;
+  document.getElementById('status-route').textContent = S.connected ? 'מחובר' : 'מנותק';
+  document.getElementById('status-source').textContent = t;
+  document.getElementById('status-meta').textContent = 'סולחא.com';
+  document.getElementById('status-note').textContent =
+    S.user ? S.user + ' · ' + S.page : 'כנס למערכת';
+
+  var side = document.querySelector('.side');
+  var navBox = document.getElementById('nav-box');
+  if (!navBox) {
+    navBox = document.createElement('section');
+    navBox.id = 'nav-box';
+    navBox.className = 'box';
+    navBox.innerHTML = '<h3>ניווט</h3>';
+    side.insertBefore(navBox, side.firstChild);
+  }
+  var navHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  if (S.user) {
+    navHTML += '<button onclick="nav(\'פנים\')" style="font-size:11px;padding:6px 10px' + (S.page==='פנים'?';border:2px solid var(--accent)':'') + '">פנים</button>';
+    if (isAdmin()) {
+      navHTML += '<button onclick="nav(\'ניהול\')" style="font-size:11px;padding:6px 10px' + (S.page==='ניהול'?';border:2px solid var(--accent)':'') + '">ניהול</button>';
+      navHTML += '<button onclick="nav(\'ליבה\')" style="font-size:11px;padding:6px 10px' + (S.page==='ליבה'?';border:2px solid var(--accent)':'') + '">ליבה</button>';
+    }
+    navHTML += '<button onclick="doLogout()" class="alt" style="font-size:11px;padding:6px 10px">יציאה</button>';
+  }
+  navHTML += '</div>';
+  navBox.innerHTML = '<h3>ניווט</h3>' + navHTML;
+
+  renderScreens(computeView());
+
+  var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
+  renderList('route-meta', [
+    'משתמש: ' + (S.user || 'אורח'),
+    'בקשות: ' + (S.requests.length + S.done.length),
+    'פתוחות: ' + open.length,
+    'שטח: ' + S.viewport.w + 'x' + S.viewport.h,
+  ]);
+  renderList('log-list', open.slice(-8).map(function(r) { return '#' + (r['מספר']||'?') + ' ' + (r['מה']||'').substring(0,50); }));
+
+  var existing = document.getElementById('sub-overlay');
+  if (existing) existing.remove();
+  if (S.sub === 'מכריע') {
+    var ov = renderSubMachria();
+    ov.id = 'sub-overlay';
+    document.body.appendChild(ov);
+  }
+}
+
+// ═══ אתחול ═══
+
+document.getElementById('send-btn').addEventListener('click', function() { sendRequest('בקש'); });
+document.getElementById('approve-btn').addEventListener('click', function() { showSub('מכריע'); });
+document.getElementById('rogez-btn').addEventListener('click', async function() {
+  await http('/api/רוגז');
+  await loadData();
+});
+
+// שחזור משתמש שמור
+(function() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('sulha_user') || 'null');
+    if (saved) {
+      if (isPnim(saved)) {
+        showPnim(saved);
+      } else {
+        showHutz(saved);
+      }
+    }
+  } catch(_) {}
+})();
+</script>
 </body>
 </html>
