@@ -61,6 +61,11 @@
       font-size: 22px;
       margin-top: 4px;
     }
+    .metric.flash {
+      animation: pulse 1s ease 3;
+      border-color: #1f7a4d;
+      box-shadow: 0 0 0 3px rgba(31,122,77,.16);
+    }
     .actions {
       display: flex;
       gap: 10px;
@@ -100,6 +105,38 @@
       font-size: 13px;
       margin-top: 10px;
     }
+    .chat {
+      display: grid;
+      gap: 10px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 92px;
+      resize: vertical;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: #f7efe2;
+      padding: 14px;
+      font: inherit;
+    }
+    .versions {
+      display: grid;
+      gap: 8px;
+      max-height: 180px;
+      overflow: auto;
+    }
+    .version {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #f4ecdf;
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); background: #f4ecdf; }
+      50% { transform: scale(1.02); background: #e6f5ea; }
+      100% { transform: scale(1); background: #f4ecdf; }
+    }
     @media (max-width: 760px) {
       .grid { grid-template-columns: 1fr; }
     }
@@ -115,6 +152,8 @@
       <div class="grid">
         <div class="stack">
           <div class="metric">מצב נוכחי<b id="status">טוען...</b></div>
+          <div class="metric" id="versionCard">גרסה<b id="versionText">0</b></div>
+          <div class="metric">בקשה מספר<b id="requestId">אין</b></div>
           <div class="metric">נסיונות עד כה<b id="attempts">0</b></div>
           <div class="metric">בקשה נוכחית<b id="requestText">אין</b></div>
           <div class="metric">צומת צפה<b id="nodeState">טוען...</b></div>
@@ -122,18 +161,29 @@
             <button class="approve" id="approveBtn">אשר</button>
             <button class="refresh" id="refreshBtn">רענן</button>
           </div>
+          <div class="chat">
+            <textarea id="chatText" placeholder="ממשק שיחה אל אברהם"></textarea>
+            <button class="refresh" id="chatBtn">שלח שיחה</button>
+          </div>
           <div class="tiny" id="hint"></div>
         </div>
-        <pre id="raw">טוען...</pre>
+        <div class="stack">
+          <pre id="raw">טוען...</pre>
+          <div class="versions" id="versions"></div>
+        </div>
       </div>
     </div>
   </div>
   <script>
+    let lastVersion = 0;
+
     function apiBase() {
       try {
         const q = new URLSearchParams(location.search);
         const explicit = q.get('api') || localStorage.getItem('sulha_simple_api') || window.SULHA_SIMPLE_API || '';
-        return explicit ? String(explicit).replace(/\/$/, '') : '';
+        if (explicit) return String(explicit).replace(/\/$/, '');
+        if (location.hostname === 'xn--4dbjgtx.com' || location.hostname === 'www.xn--4dbjgtx.com') return 'http://127.0.0.1:8781';
+        return '';
       } catch (_) {
         return '';
       }
@@ -144,17 +194,52 @@
       return base ? (base + path) : path;
     }
 
+    async function ensureNotifications() {
+      try {
+        if ('Notification' in window && Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+      } catch (_) {}
+    }
+
+    function blinkVersion(version) {
+      const card = document.getElementById('versionCard');
+      card.classList.remove('flash');
+      void card.offsetWidth;
+      card.classList.add('flash');
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('סולחא · גרסה חדשה', { body: 'גרסה ' + version + ' עלתה' });
+      }
+    }
+
+    function renderVersions(items) {
+      const root = document.getElementById('versions');
+      root.innerHTML = '';
+      for (const item of (items || []).slice().reverse()) {
+        const node = document.createElement('div');
+        node.className = 'version';
+        node.textContent = '#' + item.מספר + ' · ' + item.סוג + (item.בקשה && item.בקשה.מה ? ' · ' + item.בקשה.מה : '');
+        root.appendChild(node);
+      }
+    }
+
     async function loadState() {
       const response = await fetch(apiUrl('/api/מצב'));
       const data = await response.json();
-      const pending = data.ממתינה || null;
+      const pending = data.בקשה || data.ממתינה || null;
       const node = data.צומת || null;
+      const version = Number(data.גרסה || 0);
       document.getElementById('status').textContent = pending ? pending.מצב : 'שקט';
+      document.getElementById('versionText').textContent = String(version);
+      document.getElementById('requestId').textContent = pending ? String(pending.מספר || 'אין') : 'אין';
       document.getElementById('attempts').textContent = pending ? String(pending.נסיונות || 0) : '0';
       document.getElementById('requestText').textContent = pending ? (pending.מה || 'אין') : 'אין';
       document.getElementById('nodeState').textContent = node ? (node.מצב || 'שקט') : 'שקט';
       document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
       document.getElementById('hint').textContent = 'API: ' + (apiBase() || 'מקומי');
+      renderVersions(data.גרסאות || []);
+      if (version > lastVersion && lastVersion !== 0) blinkVersion(version);
+      lastVersion = version;
     }
 
     async function approve() {
@@ -166,8 +251,23 @@
       await loadState();
     }
 
+    async function sendChat() {
+      const el = document.getElementById('chatText');
+      const text = (el.value || '').trim();
+      if (!text) return;
+      await fetch(apiUrl('/api/שיחה'), {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({מאת: 'עובדיה עדי כהן', טקסט: text})
+      });
+      el.value = '';
+      await loadState();
+    }
+
     document.getElementById('approveBtn').addEventListener('click', approve);
     document.getElementById('refreshBtn').addEventListener('click', loadState);
+    document.getElementById('chatBtn').addEventListener('click', sendChat);
+    ensureNotifications();
     setInterval(loadState, 1000);
     loadState();
   </script>
