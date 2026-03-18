@@ -1,17 +1,494 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>סולחא</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-            background: #f5f0e8;
-            color: #2c2c2c;
-            min-height: 100vh;
-        }
-        nav {
-            background: #3a3a2a;
-            padding: 1...
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>סולחא</title>
+  <style>
+    :root {
+      --bg: #0a1113;
+      --fg: #e7efe6;
+      --muted: #8da198;
+      --line: rgba(231, 239, 230, .12);
+      --accent: #9ae2b0;
+      --panel: rgba(10, 17, 19, .78);
+      --warn: #f3c67d;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(154,226,176,.08), transparent 24%),
+        linear-gradient(180deg, #081012, var(--bg));
+      color: var(--fg);
+      font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
+    }
+    #app {
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .shell {
+      min-height: calc(100vh - 32px);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      overflow: hidden;
+    }
+    .bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .status {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--accent);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      min-height: 0;
+      flex: 1;
+    }
+    .view {
+      padding: 18px;
+      min-height: 0;
+      overflow: auto;
+    }
+    .side {
+      border-inline-start: 1px solid var(--line);
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 14px;
+      min-height: 0;
+    }
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.02);
+    }
+    .box h3 {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+    .input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      color: var(--fg);
+      padding: 12px 14px;
+      font: inherit;
+      outline: none;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: var(--accent);
+      color: #102016;
+      font: inherit;
+      cursor: pointer;
+    }
+    button.alt {
+      background: #dfe9dd;
+    }
+    #screens {
+      display: grid;
+      gap: 14px;
+    }
+    .screen {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(255,255,255,.02);
+    }
+    .screen-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .screen-body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+    .line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+      align-items: center;
+      min-height: 24px;
+    }
+    .glyph {
+      display: inline-grid;
+      place-items: center;
+      min-width: 1ch;
+      min-height: 1.6em;
+      padding-inline: .08em;
+      border-radius: 6px;
+      position: relative;
+    }
+    .glyph[data-kind="space"] {
+      opacity: .35;
+    }
+    .glyph::after {
+      content: attr(data-address);
+      position: absolute;
+      inset-inline-start: 50%;
+      bottom: calc(100% + 3px);
+      transform: translateX(-50%);
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #0b1517;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .glyph:hover::after {
+      opacity: 1;
+    }
+    .list {
+      display: grid;
+      gap: 8px;
+      max-height: 100%;
+      overflow: auto;
+    }
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .empty {
+      color: var(--muted);
+    }
+    #decider-panel[hidden] {
+      display: none;
+    }
+    #version-flash {
+      color: var(--warn);
+      min-height: 1.2em;
+    }
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .side {
+        border-inline-start: 0;
+        border-top: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="shell">
+      <div class="bar">
+        <div class="status">
+          <span class="chip" id="status-mode">מאתחל</span>
+          <span class="chip" id="status-route">כיוון: פתוח</span>
+          <span class="chip" id="status-source">תקשורת: לא מחובר</span>
+        </div>
+        <div id="status-meta">סולחא.com</div>
+      </div>
+      <div class="bar">
+        <div id="status-note">צפה פנים ממיר ממתין לכיוון.</div>
+        <div id="version-flash"></div>
+      </div>
+      <div class="layout">
+        <main class="view">
+          <div id="screens"></div>
+        </main>
+        <aside class="side">
+          <section class="box">
+            <h3>שיחה</h3>
+            <input id="request-input" class="input" type="text" placeholder="בקש כיוון">
+            <div class="actions">
+              <button id="send-btn">שלח</button>
+            </div>
+          </section>
+          <section class="box" id="decider-panel" hidden>
+            <h3>מכריע</h3>
+            <div id="decider-list" class="list"></div>
+            <div class="actions">
+              <button id="approve-btn" class="alt">אשר</button>
+            </div>
+          </section>
+          <section class="box">
+            <h3>כיוון</h3>
+            <div id="route-meta" class="list"></div>
+          </section>
+          <section class="box">
+            <h3>רשומות</h3>
+            <div id="log-list" class="list"></div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </div>
+  <script>
+    const STATE = {
+      route: null,
+      locked: false,
+      lastVersion: '',
+      source: '',
+    };
+
+    function baseUrl() {
+      const q = new URLSearchParams(location.search);
+      const explicit = q.get('api') || localStorage.getItem('sulha_unified_api') || window.SULHA_UNIFIED_API || '';
+      return explicit ? String(explicit).replace(/\/$/, '') : '';
+    }
+
+    function wsUrl() {
+      const q = new URLSearchParams(location.search);
+      const explicit = q.get('ws') || localStorage.getItem('sulha_ws') || window.SULHA_WS || '';
+      return explicit ? String(explicit) : '';
+    }
+
+    function http(path, opts) {
+      const base = baseUrl();
+      return fetch((base ? base : '') + path, opts);
+    }
+
+    function makeAddress(screenId, lineIndex, glyphIndex, char) {
+      return {
+        address: `${screenId}/${lineIndex}/${glyphIndex}`,
+        kind: char === ' ' ? 'space' : 'glyph',
+      };
+    }
+
+    function glyphNode(screenId, lineIndex, glyphIndex, char) {
+      const meta = makeAddress(screenId, lineIndex, glyphIndex, char);
+      const span = document.createElement('span');
+      span.className = 'glyph';
+      span.dataset.address = meta.address;
+      span.dataset.kind = meta.kind;
+      span.textContent = char === ' ' ? '·' : char;
+      return span;
+    }
+
+    function linesFrom(screen) {
+      if (Array.isArray(screen.lines) && screen.lines.length) return screen.lines;
+      if (typeof screen.text === 'string') return screen.text.split(/\r?\n/);
+      if (typeof screen.body === 'string') return screen.body.split(/\r?\n/);
+      return [''];
+    }
+
+    function screenNode(screen, idx) {
+      const id = screen.id || `screen-${idx}`;
+      const root = document.createElement('section');
+      root.className = 'screen';
+      const head = document.createElement('div');
+      head.className = 'screen-head';
+      head.innerHTML = `<span>${screen.title || id}</span><span>${screen.mode || 'צפה'}</span>`;
+      const body = document.createElement('div');
+      body.className = 'screen-body';
+      linesFrom(screen).forEach((line, lineIndex) => {
+        const row = document.createElement('div');
+        row.className = 'line';
+        Array.from(line || '').forEach((char, glyphIndex) => {
+          row.appendChild(glyphNode(id, lineIndex, glyphIndex, char));
+        });
+        if (!line) row.appendChild(glyphNode(id, lineIndex, 0, ' '));
+        body.appendChild(row);
+      });
+      root.append(head, body);
+      return root;
+    }
+
+    function renderScreens(route) {
+      const mount = document.getElementById('screens');
+      mount.innerHTML = '';
+      const screens = Array.isArray(route.screens) ? route.screens : [];
+      if (!screens.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'אין צפה פעילה.';
+        mount.appendChild(empty);
+        return;
+      }
+      screens.forEach((screen, idx) => mount.appendChild(screenNode(screen, idx)));
+    }
+
+    function renderList(id, rows) {
+      const root = document.getElementById(id);
+      root.innerHTML = '';
+      if (!rows.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.textContent = 'אין';
+        root.appendChild(empty);
+        return;
+      }
+      rows.forEach((row) => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.textContent = row;
+        root.appendChild(div);
+      });
+    }
+
+    function renderDecider(route) {
+      const panel = document.getElementById('decider-panel');
+      const rows = Array.isArray(route.decider) ? route.decider : [];
+      panel.hidden = !rows.length;
+      renderList('decider-list', rows);
+    }
+
+    function flashVersion(version) {
+      if (!version || version === STATE.lastVersion) return;
+      const root = document.getElementById('version-flash');
+      root.textContent = `גרסה חדשה: ${version}`;
+      root.animate(
+        [{ opacity: 0.15, transform: 'scale(0.98)' }, { opacity: 1, transform: 'scale(1)' }],
+        { duration: 600, iterations: 4, direction: 'alternate' }
+      );
+      if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+          new Notification('סולחא', { body: `עודכנה גרסה ${version}` });
+        } catch (_) {}
+      }
+    }
+
+    function lockRoute(route) {
+      if (!route) return;
+      flashVersion(route.version || '');
+      STATE.route = route;
+      STATE.locked = !!route.locked;
+      STATE.lastVersion = route.version || '';
+      document.getElementById('status-mode').textContent = route.mode || 'הווה';
+      document.getElementById('status-route').textContent = `כיוון: ${STATE.locked ? 'נעול' : 'פתוח'}`;
+      document.getElementById('status-source').textContent = `תקשורת: ${STATE.source || 'אחודה'}`;
+      document.getElementById('status-note').textContent = route.note || 'הכיוון התקבל.';
+      document.getElementById('status-meta').textContent = route.meta || 'סולחא.com';
+      renderScreens(route);
+      renderDecider(route);
+      renderList('route-meta', [
+        `גרסה: ${route.version || '-'}`,
+        `מבקש: ${route.actor || 'עובדיה עדי כהן'}`,
+        `צומת: ${(route.nodes || []).join(' -> ') || 'אין'}`,
+      ]);
+      renderList('log-list', (route.log || []).slice(-12));
+    }
+
+    function normalize(packet) {
+      const screenText = packet && packet.צפה && typeof packet.צפה.טקסט === 'string'
+        ? packet.צפה.טקסט
+        : packet && packet.תוצאה && packet.תוצאה.טקסט
+          ? packet.תוצאה.טקסט
+          : packet && packet.שיחה && packet.שיחה.טקסט
+            ? packet.שיחה.טקסט
+            : '';
+      return {
+        mode: packet.mode || packet.מצב || 'הווה',
+        locked: packet.locked ?? packet.נעול ?? true,
+        version: packet.version || packet.שעה || '',
+        actor: packet.מי || 'עובדיה עדי כהן',
+        meta: packet.meta || packet.שם_במה || 'סולחא.com',
+        note: packet.note || packet.תזכורת || 'כיוון התקבל מן התקשורת האחודה.',
+        nodes: packet.nodes || packet.צמתים || ['מבקש', 'אברהם', 'סולחא'],
+        log: packet.log || packet.רשומות || [],
+        decider: packet.decider || packet.מכריע || [],
+        screens: packet.screens || packet.צפות || [{
+          id: 'primary',
+          title: packet.title || 'צפה ראשית',
+          text: screenText || JSON.stringify(packet, null, 2),
+          mode: packet.kind || 'אחוד',
+        }],
+      };
+    }
+
+    async function pullDirection() {
+      const response = await http('/api/אחוד?פעולה=צפה');
+      const packet = await response.json();
+      STATE.source = 'HTTP';
+      lockRoute(normalize(packet));
+    }
+
+    async function sendRequest(kind) {
+      const input = document.getElementById('request-input');
+      const text = input.value.trim();
+      if (!text && kind !== 'אשר') return;
+      const response = await http('/api/אחוד', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          מי: 'עובדיה עדי כהן',
+          מה: text || 'אשר',
+          פעולה: kind,
+          ממשק: 'סולחא.com',
+          דף: 'ראשי',
+        }),
+      });
+      const packet = await response.json();
+      STATE.source = 'HTTP';
+      lockRoute(normalize(packet));
+      input.value = '';
+    }
+
+    function connectWs() {
+      const url = wsUrl();
+      if (!url) return;
+      try {
+        const ws = new WebSocket(url);
+        ws.onopen = () => { STATE.source = 'WS'; };
+        ws.onmessage = (event) => {
+          try {
+            const packet = JSON.parse(event.data);
+            lockRoute(normalize(packet));
+          } catch (_) {}
+        };
+      } catch (_) {}
+    }
+
+    document.getElementById('send-btn').addEventListener('click', () => sendRequest('בקש'));
+    document.getElementById('approve-btn').addEventListener('click', () => sendRequest('אשר'));
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+    pullDirection().catch(() => {
+      lockRoute(normalize({
+        note: 'התקשורת האחודה לא ענתה.',
+        log: ['רוגז: אין מענה מן התקשורת האחודה'],
+        screens: [{ title: 'רוגז', text: 'אין מענה מן התקשורת האחודה' }],
+      }));
+    });
+    connectWs();
+  </script>
+</body>
+</html>
