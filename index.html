@@ -20,59 +20,202 @@
       color: var(--fg);
       font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
     }
-    body { padding: 16px; }
+    body { padding: 0; }
     .hidden { display: none !important; }
 
-    /* ═══ כניסה ═══ */
-    #login-page {
-      min-height: calc(100vh - 32px);
-      display: grid;
-      place-items: center;
+    /* ═══ סרגל מנהל ═══ */
+    .admin-bar {
+      background: rgba(0,0,0,.4);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 16px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      font-size: 12px;
     }
-    .login-box {
-      width: min(420px, 100%);
+    .admin-bar .ab-label {
+      color: var(--accent);
+      font-weight: 600;
+      margin-inline-end: 8px;
+    }
+    .admin-bar button {
       border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--panel);
-      padding: 48px 32px;
+      border-radius: 999px;
+      padding: 5px 12px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .admin-bar button:hover { color: var(--fg); border-color: var(--accent); }
+    .admin-bar button.active {
+      background: var(--accent);
+      color: #102016;
+      border-color: var(--accent);
+    }
+    .admin-bar select {
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--fg);
+      padding: 4px 8px;
+      font: inherit;
+      font-size: 12px;
+    }
+    .admin-bar .ab-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--line);
+      margin: 0 4px;
+    }
+
+    /* ═══ חוץ ═══ */
+    .hutz {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    .hutz-header {
+      text-align: center;
+      padding: 48px 24px 24px;
+    }
+    .hutz-header h1 {
+      font-size: 36px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .hutz-header p {
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .hutz-body {
+      padding: 0 24px 24px;
       display: grid;
       gap: 20px;
-      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      align-content: start;
     }
-    .login-box h1 { font-size: 32px; color: var(--accent); }
-    .login-box p { color: var(--muted); font-size: 14px; }
+    .hutz-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      background: var(--panel);
+    }
+    .hutz-card h3 {
+      color: var(--accent);
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .hutz-form { display: grid; gap: 10px; }
+    .hutz-form label { font-size: 13px; color: var(--muted); }
     .input {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       background: rgba(255,255,255,.03);
       color: var(--fg);
-      padding: 14px 16px;
+      padding: 11px 14px;
       font: inherit;
-      font-size: 16px;
+      font-size: 14px;
       outline: none;
-      text-align: center;
     }
     .input:focus { border-color: var(--accent); }
+    textarea.input { min-height: 70px; resize: vertical; }
     .btn {
       border: 0; border-radius: 999px;
-      padding: 14px 20px;
+      padding: 11px 18px;
       background: var(--accent); color: #102016;
-      font: inherit; font-size: 16px; font-weight: 600;
+      font: inherit; font-size: 14px; font-weight: 600;
       cursor: pointer;
+      justify-self: start;
     }
     .btn:hover { opacity: .85; }
-    .login-error { color: #e55; font-size: 13px; min-height: 1.4em; }
+    .sent-msg { color: var(--accent); font-size: 13px; }
 
-    /* ═══ פנים (הממשק המלא) ═══ */
+    /* צל — הקונדסאים */
+    .shadow-box {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      background: rgba(154, 226, 176, .03);
+      min-height: 200px;
+    }
+    .shadow-box h3 {
+      color: var(--accent);
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+    .shadow-pulse {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; background: var(--accent);
+      margin-inline-end: 6px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:.3; } 50% { opacity:1; } }
+    .shadow-stage {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    .shadow-node {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      background: rgba(255,255,255,.02);
+      transition: all .3s;
+    }
+    .shadow-node .node-icon {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
+    .shadow-node .node-name {
+      font-size: 13px;
+      color: var(--fg);
+      font-weight: 600;
+    }
+    .shadow-node .node-status {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .shadow-node.active {
+      border-color: var(--accent);
+      background: rgba(154,226,176,.06);
+    }
+
+    .hutz-footer {
+      padding: 16px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    .hutz-footer button {
+      background: none; border: none;
+      color: var(--muted); font: inherit; font-size: 11px;
+      cursor: pointer; text-decoration: underline;
+      margin-inline-start: 8px;
+    }
+
+    /* ═══ פנים ═══ */
+    .pnim {
+      min-height: 100vh;
+    }
     .shell {
-      min-height: calc(100vh - 32px);
+      min-height: calc(100vh - 40px);
       border: 1px solid var(--line);
       border-radius: 24px;
       background: var(--panel);
       display: grid;
       grid-template-rows: auto auto 1fr;
       overflow: hidden;
+      margin: 8px;
     }
     .bar {
       display: flex; gap: 12px; align-items: center;
@@ -88,7 +231,7 @@
     }
     .layout {
       display: grid; grid-template-columns: minmax(0, 1fr) 360px;
-      min-height: 0; flex: 1;
+      min-height: 0;
     }
     .view { padding: 18px; min-height: 0; overflow: auto; }
     .side {
@@ -103,7 +246,7 @@
     }
     .box h3 { margin: 0 0 10px; color: var(--accent); font-size: 14px; }
     .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    button {
+    button.pnim-btn {
       border: 0; border-radius: 999px; padding: 10px 14px;
       background: var(--accent); color: #102016;
       font: inherit; cursor: pointer;
@@ -136,124 +279,80 @@
     }
     .empty { color: var(--muted); }
 
-    /* ═══ חוץ ═══ */
-    .hutz-shell {
-      min-height: calc(100vh - 32px);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--panel);
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      overflow: hidden;
-    }
-    .hutz-welcome { padding: 32px 24px; text-align: center; }
-    .hutz-welcome h2 { color: var(--accent); font-size: 22px; margin-bottom: 8px; }
-    .hutz-welcome p { color: var(--muted); font-size: 14px; }
-    .hutz-body { padding: 18px 24px; display: grid; gap: 18px; align-content: start; overflow: auto; }
-    .hutz-section {
-      border: 1px solid var(--line); border-radius: 18px;
-      padding: 16px; background: rgba(255,255,255,.02);
-    }
-    .hutz-section h3 { color: var(--accent); font-size: 14px; margin-bottom: 10px; }
-    .hutz-form { display: grid; gap: 10px; }
-    .hutz-form label { font-size: 13px; color: var(--muted); }
-    .hutz-form .input { text-align: start; font-size: 14px; padding: 10px 14px; }
-    .hutz-form textarea.input { min-height: 80px; resize: vertical; }
-    .hutz-form .btn { font-size: 14px; padding: 10px 16px; justify-self: start; }
-    .hutz-shadow {
-      border: 1px solid var(--line); border-radius: 18px;
-      padding: 16px; background: rgba(154,226,176,.03);
-    }
-    .hutz-shadow h3 { color: var(--accent); font-size: 14px; margin-bottom: 10px; }
-    .shadow-line {
-      padding: 6px 0; font-size: 13px; color: var(--muted);
-      border-bottom: 1px solid var(--line);
-    }
-    .shadow-line:last-child { border-bottom: 0; }
-    .shadow-pulse {
-      display: inline-block; width: 8px; height: 8px;
-      border-radius: 50%; background: var(--accent);
-      margin-inline-end: 6px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100% { opacity:.3; } 50% { opacity:1; } }
-    .hutz-footer {
-      padding: 14px 18px; border-top: 1px solid var(--line);
-      font-size: 12px; color: var(--muted); text-align: center;
-    }
-    .link-btn {
-      background: none; border: 0; color: var(--muted);
-      cursor: pointer; font: inherit; font-size: 12px; text-decoration: underline;
-    }
-    .sent-msg { color: var(--accent); font-size: 13px; }
-
     @media (max-width: 960px) {
       .layout { grid-template-columns: 1fr; }
       .side { border-inline-start: 0; border-top: 1px solid var(--line); }
+      .shadow-stage { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ דף כניסה ═══ -->
-  <div id="login-page">
-    <div class="login-box">
-      <h1>סולחא</h1>
-      <p>תקשורת אחודה</p>
-      <input id="login-name" class="input" type="text" placeholder="שם מלא" autofocus>
-      <button class="btn" onclick="doLogin()">כניסה</button>
-      <div id="login-error" class="login-error"></div>
-    </div>
+  <!-- ═══ סרגל מנהל (רק למנהלים) ═══ -->
+  <div id="admin-bar" class="admin-bar hidden">
+    <span class="ab-label">מנהל</span>
+    <button id="ab-hutz" onclick="adminView('חוץ')">חוץ</button>
+    <button id="ab-pnim" onclick="adminView('פנים')">פנים</button>
+    <button id="ab-nihul" onclick="adminView('ניהול')">ניהול</button>
+    <button id="ab-liba" onclick="adminView('ליבה')">ליבה</button>
+    <div class="ab-sep"></div>
+    <select id="ab-user" onchange="adminSwitchUser(this.value)">
+      <option value="עובדיה עדי כהן">עדי</option>
+      <option value="שחף גליה כהן">שחף</option>
+      <option value="אורח">אורח (חוץ)</option>
+    </select>
+    <div class="ab-sep"></div>
+    <button onclick="doLogout()" style="color:#e55">יציאה</button>
   </div>
 
-  <!-- ═══ מערכת חוץ ═══ -->
-  <div id="hutz-page" class="hutz-shell hidden">
-    <div class="bar">
-      <div class="status">
-        <span class="chip" id="hutz-user">אורח</span>
-        <span class="chip" id="hutz-time">...</span>
-      </div>
-      <div>
-        סולחא · חוץ
-        <button class="link-btn" onclick="doLogout()" style="margin-inline-start:12px">יציאה</button>
-      </div>
-    </div>
-    <div class="hutz-welcome">
-      <h2 id="hutz-greeting">שלום</h2>
-      <p>ברוכים הבאים למערכת סולחא. כאן תוכלו לשלוח בקשות ולעקוב אחרי מה שקורה.</p>
+  <!-- ═══ חוץ ═══ -->
+  <div id="page-hutz" class="hutz">
+    <div class="hutz-header">
+      <h1>סולחא</h1>
+      <p>תקשורת אחודה</p>
     </div>
     <div class="hutz-body">
-      <div class="hutz-section">
-        <h3>שלח בקשה</h3>
+
+      <!-- צל — קונדסאים -->
+      <div class="shadow-box">
+        <h3><span class="shadow-pulse"></span>מה קורה על הבמה</h3>
+        <div id="shadow-stage" class="shadow-stage"></div>
+      </div>
+
+      <!-- איסוף פרטים -->
+      <div class="hutz-card">
+        <h3>רוצה לדבר?</h3>
         <div class="hutz-form">
+          <label>שם</label>
+          <input id="hutz-name" class="input" type="text" placeholder="איך קוראים לך?">
           <label>נושא</label>
           <input id="hutz-subject" class="input" type="text" placeholder="במה אפשר לעזור?">
           <label>פירוט</label>
-          <textarea id="hutz-detail" class="input" placeholder="תאר בקצרה..."></textarea>
+          <textarea id="hutz-detail" class="input" placeholder="ספר עוד..."></textarea>
           <button class="btn" onclick="sendHutz()">שלח</button>
-          <div id="hutz-sent" class="sent-msg hidden">הבקשה נשלחה</div>
+          <div id="hutz-sent" class="sent-msg hidden">נשלח בהצלחה</div>
         </div>
       </div>
-      <div class="hutz-shadow">
-        <h3><span class="shadow-pulse"></span>מה קורה עכשיו</h3>
-        <div id="shadow-feed"><div class="shadow-line">טוען...</div></div>
-      </div>
+
     </div>
-    <div class="hutz-footer">סולחא · תקשורת אחודה</div>
+    <div class="hutz-footer">
+      סולחא · תקשורת אחודה
+      <button onclick="showAdminLogin()">כניסת מנהלים</button>
+    </div>
   </div>
 
-  <!-- ═══ מערכת פנים ═══ -->
-  <div id="pnim-page" class="hidden">
+  <!-- ═══ פנים ═══ -->
+  <div id="page-pnim" class="pnim hidden">
     <div class="shell">
       <div class="bar">
         <div class="status">
-          <span class="chip" id="status-mode">מאתחל</span>
-          <span class="chip" id="status-route">כיוון: פתוח</span>
-          <span class="chip" id="status-source">תקשורת: לא מחובר</span>
+          <span class="chip" id="status-mode">פנים</span>
+          <span class="chip" id="status-route">מנותק</span>
+          <span class="chip" id="status-source">...</span>
         </div>
         <div id="status-meta">סולחא.com</div>
       </div>
-      <div class="bar" id="status-note">צפה פנים ממיר ממתין לכיוון.</div>
+      <div class="bar" id="status-note">צפה פנים</div>
       <div class="layout">
         <main class="view">
           <div id="screens"></div>
@@ -263,9 +362,9 @@
             <h3>שיחה</h3>
             <input id="request-input" class="input" type="text" placeholder="בקש כיוון">
             <div class="actions">
-              <button id="send-btn">שלח</button>
-              <button id="approve-btn" class="alt">אשר</button>
-              <button id="rogez-btn" style="background:#c44;color:#fff">רוגז</button>
+              <button class="pnim-btn" id="send-btn">שלח</button>
+              <button class="pnim-btn alt" id="approve-btn">אשר</button>
+              <button class="pnim-btn" id="rogez-btn" style="background:#c44;color:#fff">רוגז</button>
             </div>
           </section>
           <section class="box">
@@ -281,75 +380,155 @@
     </div>
   </div>
 
+  <!-- דיאלוג כניסת מנהלים -->
+  <div id="admin-login-overlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:grid;place-items:center" onclick="if(event.target===this)this.classList.add('hidden')">
+    <div style="background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:32px;width:min(360px,90vw);text-align:center;display:grid;gap:16px">
+      <h3 style="color:var(--accent)">כניסת מנהלים</h3>
+      <input id="admin-name" class="input" type="text" placeholder="שם מלא" style="text-align:center">
+      <button class="btn" onclick="doAdminLogin()" style="justify-self:center">כניסה</button>
+      <div id="admin-error" style="color:#e55;font-size:13px;min-height:1.2em"></div>
+    </div>
+  </div>
+
 <script>
 // ═══════════════════════════════════════
-// סולחא · דף אחד · כניסה + פנים + חוץ
+// סולחא · דף אחד · חוץ ברירת מחדל · מנהל רואה הכל
 // ═══════════════════════════════════════
 
-const PNIM_USERS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+var PNIM_USERS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+var currentView = 'חוץ';
+var currentAdmin = null;
 
 // ═══ תקשורת ═══
 function baseUrl() {
-  const q = new URLSearchParams(location.search);
+  var q = new URLSearchParams(location.search);
   return (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
 }
 function http(path, opts) { return fetch((baseUrl() || '') + path, opts); }
-
 function isPnim(name) { return PNIM_USERS.indexOf(name) >= 0; }
 
-// ═══ כניסה ═══
-function doLogin() {
-  const input = document.getElementById('login-name');
-  const name = (input.value || '').trim();
-  if (!name) {
-    document.getElementById('login-error').textContent = 'הכנס שם מלא';
+// ═══ כניסת מנהלים ═══
+function showAdminLogin() {
+  document.getElementById('admin-login-overlay').classList.remove('hidden');
+  document.getElementById('admin-name').focus();
+}
+
+document.getElementById('admin-name').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doAdminLogin();
+});
+
+function doAdminLogin() {
+  var name = (document.getElementById('admin-name').value || '').trim();
+  if (!isPnim(name)) {
+    document.getElementById('admin-error').textContent = 'לא מורשה';
     return;
   }
   localStorage.setItem('sulha_user', JSON.stringify(name));
-  if (isPnim(name)) {
-    showPnim(name);
-  } else {
-    showHutz(name);
-  }
+  currentAdmin = name;
+  document.getElementById('admin-login-overlay').classList.add('hidden');
+  activateAdmin(name);
 }
 
 function doLogout() {
   localStorage.removeItem('sulha_user');
-  S.user = null; S.page = 'אתר';
-  document.getElementById('login-page').classList.remove('hidden');
-  document.getElementById('pnim-page').classList.add('hidden');
-  document.getElementById('hutz-page').classList.add('hidden');
-  document.getElementById('login-name').value = '';
+  currentAdmin = null;
+  currentView = 'חוץ';
+  document.getElementById('admin-bar').classList.add('hidden');
+  document.getElementById('page-pnim').classList.add('hidden');
+  document.getElementById('page-hutz').classList.remove('hidden');
 }
 
-document.getElementById('login-name').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') doLogin();
-});
-
-// ═══ חוץ ═══
-let _shadowInterval = null;
-
-function showHutz(name) {
-  document.getElementById('login-page').classList.add('hidden');
-  document.getElementById('pnim-page').classList.add('hidden');
-  document.getElementById('hutz-page').classList.remove('hidden');
-  document.getElementById('hutz-user').textContent = name;
-  document.getElementById('hutz-greeting').textContent = 'שלום, ' + name;
-  loadShadow();
-  if (_shadowInterval) clearInterval(_shadowInterval);
-  _shadowInterval = setInterval(loadShadow, 5000);
+function activateAdmin(name) {
+  currentAdmin = name;
+  document.getElementById('admin-bar').classList.remove('hidden');
+  document.getElementById('ab-user').value = name;
+  S.user = name;
+  adminView('פנים');
 }
 
+// ═══ סרגל מנהל — toggle תצוגות ═══
+function adminView(view) {
+  currentView = view;
+  // עדכון כפתורים
+  ['ab-hutz','ab-pnim','ab-nihul','ab-liba'].forEach(function(id) {
+    document.getElementById(id).classList.remove('active');
+  });
+  var map = {'חוץ':'ab-hutz','פנים':'ab-pnim','ניהול':'ab-nihul','ליבה':'ab-liba'};
+  if (map[view]) document.getElementById(map[view]).classList.add('active');
+
+  if (view === 'חוץ') {
+    document.getElementById('page-pnim').classList.add('hidden');
+    document.getElementById('page-hutz').classList.remove('hidden');
+  } else {
+    document.getElementById('page-hutz').classList.add('hidden');
+    document.getElementById('page-pnim').classList.remove('hidden');
+    S.page = view;
+    loadData();
+    render();
+  }
+}
+
+function adminSwitchUser(name) {
+  S.user = name;
+  if (name === 'אורח') {
+    adminView('חוץ');
+  } else {
+    loadData();
+    render();
+  }
+}
+
+// ═══ חוץ — צל קונדסאים ═══
+
+var KONDENSAIM = [
+  {icon: '🎪', name: 'קרקס הפלאים', states: ['מחמם', 'על הבמה', 'הפסקה', 'סיום']},
+  {icon: '🏗️', name: 'בונה מגדלים', states: ['מתכנן', 'יוצק', 'מטפס', 'מנוח']},
+  {icon: '🎭', name: 'תיאטרון הצל', states: ['חזרה', 'הצגה', 'מחיאות', 'וילון']},
+  {icon: '🚀', name: 'תחנת שיגור', states: ['ספירה לאחור', 'שיגור', 'במסלול', 'נחיתה']},
+  {icon: '🌊', name: 'גולש גלים', states: ['ממתין', 'תופס גל', 'גולש', 'צולל']},
+  {icon: '🎨', name: 'סטודיו הצבע', states: ['מערבב', 'צובע', 'מייבש', 'תולה']},
+  {icon: '🔬', name: 'מעבדת חידות', states: ['חוקר', 'מנסה', 'מגלה', 'רושם']},
+  {icon: '🎵', name: 'תזמורת רחוב', states: ['מכוון', 'מנגן', 'סולו', 'קצה']},
+];
+
+var shadowState = {};
+
+function updateShadow() {
+  var stage = document.getElementById('shadow-stage');
+  stage.innerHTML = '';
+
+  KONDENSAIM.forEach(function(k, i) {
+    // מצב פסאודו-אקראי שמשתנה כל כמה שניות
+    if (!shadowState[i] || Math.random() < 0.3) {
+      shadowState[i] = Math.floor(Math.random() * k.states.length);
+    }
+    var stateIdx = shadowState[i];
+    var isActive = stateIdx === 1 || stateIdx === 2;
+
+    var node = document.createElement('div');
+    node.className = 'shadow-node' + (isActive ? ' active' : '');
+    node.innerHTML =
+      '<div class="node-icon">' + k.icon + '</div>' +
+      '<div class="node-name">' + k.name + '</div>' +
+      '<div class="node-status">' + k.states[stateIdx] + '</div>';
+    stage.appendChild(node);
+  });
+}
+
+updateShadow();
+setInterval(updateShadow, 4000);
+
+// ═══ חוץ — שליחת פרטים ═══
 function sendHutz() {
-  const name = JSON.parse(localStorage.getItem('sulha_user') || '""');
-  const subject = document.getElementById('hutz-subject').value.trim();
-  const detail = document.getElementById('hutz-detail').value.trim();
+  var name = (document.getElementById('hutz-name').value || '').trim() || 'אורח';
+  var subject = document.getElementById('hutz-subject').value.trim();
+  var detail = document.getElementById('hutz-detail').value.trim();
   if (!subject) return;
-  const text = subject + (detail ? ' — ' + detail : '');
+  var text = subject + (detail ? ' — ' + detail : '');
   http('/api/אחוד', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({'מי': name || 'אורח', 'מה': text, 'פעולה': 'בקשה', 'ממשק': 'חוץ', 'דף': 'חוץ', 'משתמש': name || 'אורח'})
+    body: JSON.stringify({'מי': name, 'מה': text, 'פעולה': 'בקשה', 'ממשק': 'חוץ', 'דף': 'חוץ', 'משתמש': name})
   }).catch(function(){});
   document.getElementById('hutz-subject').value = '';
   document.getElementById('hutz-detail').value = '';
@@ -358,93 +537,20 @@ function sendHutz() {
   setTimeout(function() { msg.classList.add('hidden'); }, 3000);
 }
 
-function loadShadow() {
-  var feed = document.getElementById('shadow-feed');
-  var lines = [];
-
-  Promise.all([
-    http('/api/שעה').then(function(r){return r.json();}).catch(function(){return {};}),
-    http('/api/צפה').then(function(r){return r.json();}).catch(function(){return {};}),
-    http('/api/תור').then(function(r){return r.json();}).catch(function(){return {};})
-  ]).then(function(results) {
-    var timeRes = results[0];
-    var viewRes = results[1];
-    var qRes = results[2];
-
-    var now = timeRes['שעה'] || '';
-    if (now) {
-      var t = now.split('T')[1].split('.')[0];
-      lines.push('שעה: ' + t);
-    }
-
-    var records = (viewRes['שנה'] && viewRes['שנה']['רשומות']) || viewRes['רשומות'] || [];
-    var recent = records.slice(-6);
-    if (recent.length > 0) {
-      lines.push('פעילות אחרונה:');
-      recent.forEach(function(r) {
-        lines.push('  ' + (r['מי'] || '?') + ' · ' + (r['מה'] || '').substring(0, 40));
-      });
-    }
-
-    var pending = ((qRes['בקשות'] || []).filter(function(b) { return b['מצב'] !== 'בוצע'; }));
-    var done = qRes['בוצעו'] || [];
-    if (pending.length || done.length) {
-      lines.push('בקשות פתוחות: ' + pending.length);
-      lines.push('בקשות שבוצעו: ' + done.length);
-    }
-
-    if (lines.length === 0) lines.push('המערכת פעילה');
-
-    feed.innerHTML = '';
-    lines.forEach(function(l) {
-      var div = document.createElement('div');
-      div.className = 'shadow-line';
-      div.textContent = l;
-      feed.appendChild(div);
-    });
-  }).catch(function() {
-    feed.innerHTML = '<div class="shadow-line">המערכת פעילה · אין חיבור לשרת כרגע</div>';
-  });
-}
-
 // ═══════════════════════════════════════
-// פנים — הממשק המלא (כמו שהיה)
+// פנים
 // ═══════════════════════════════════════
 
-const ADMINS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
-
-const S = {
-  user: null,
-  page: 'אתר',
-  sub: null,
-  route: null,
-  source: '',
-  time: '',
-  requests: [],
-  done: [],
-  ws: null,
-  connected: false,
+var S = {
+  user: null, page: 'פנים', sub: null,
+  route: null, source: '', time: '',
+  requests: [], done: [],
+  ws: null, connected: false,
   viewport: {w: innerWidth, h: innerHeight},
   sent: {},
 };
 
-const PAGES = {
-  'אתר':   {title: 'סולחא', auth: false},
-  'פנים':  {title: 'פנים', auth: true},
-  'ניהול': {title: 'ניהול', auth: true, admin: true},
-  'ליבה':  {title: 'ליבה', auth: true, admin: true},
-};
-
-function showPnim(name) {
-  document.getElementById('login-page').classList.add('hidden');
-  document.getElementById('hutz-page').classList.add('hidden');
-  document.getElementById('pnim-page').classList.remove('hidden');
-  S.user = name;
-  S.page = 'פנים';
-  loadData();
-  connectWs();
-  render();
-}
+function isAdmin() { return PNIM_USERS.indexOf(S.user) >= 0; }
 
 function connectWs() {
   var q = new URLSearchParams(location.search);
@@ -486,23 +592,16 @@ async function sendRequest(kind) {
   var text = (input.value || '').trim();
   if (!text) return;
   var key = (S.user || '?') + '|' + kind + '|' + text;
-  if (S.sent[key]) {
-    http('/api/אחוד', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({'מי': 'רוגז', 'מה': 'לולאה: ' + key, 'פעולה': 'רוגז', 'ממשק': 'סולחא.com', 'דף': S.page})
-    });
-    return;
-  }
+  if (S.sent[key]) return;
   S.sent[key] = true;
   await http('/api/אחוד', {
     method: 'POST', headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
       'מי': S.user || 'עובדיה עדי כהן',
       'מה': text, 'פעולה': kind,
-      'ממשק': 'סולחא.com',
-      'דף': S.page
+      'ממשק': 'סולחא.com', 'דף': S.page
     })
-  }).then(function(r){return r.json();}).then(function(p) { S.source = 'HTTP'; });
+  }).catch(function(){});
   input.value = '';
   await loadData();
 }
@@ -510,33 +609,14 @@ async function sendRequest(kind) {
 async function redoReq(num, direction) {
   if (!S.user) return;
   var key = S.user + '|redo|' + num + '|' + direction;
-  if (S.sent[key]) {
-    http('/api/אחוד', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({'מי': 'רוגז', 'מה': 'לולאה: ' + key, 'פעולה': 'רוגז', 'ממשק': 'סולחא.com', 'דף': S.page})
-    });
-    return;
-  }
+  if (S.sent[key]) return;
   S.sent[key] = true;
   await http('/api/מבקש/בצע-מחדש', {
     method: 'POST', headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({'משתמש': S.user, 'מספר': num, 'כיוון': direction})
-  });
+  }).catch(function(){});
   await loadData();
 }
-
-function isAdmin() { return ADMINS.indexOf(S.user) >= 0; }
-
-function nav(page) {
-  var p = PAGES[page];
-  if (!p) return;
-  if (p.auth && !S.user) return;
-  if (p.admin && !isAdmin()) return;
-  S.page = page; S.sub = null; render();
-}
-
-function showSub(name) { S.sub = name; render(); }
-function hideSub() { S.sub = null; render(); }
 
 function glyphNode(screenId, li, gi, ch) {
   var span = document.createElement('span');
@@ -589,13 +669,6 @@ function computeView() {
   var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
   var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
 
-  if (S.page === 'אתר') {
-    return [{
-      id: 'welcome', title: 'שלום עולם', mode: 'חוץ',
-      text: 'סולחא — תקשורת אחודה\n\nשלוש שכבות: ליבה, פנים, חוץ\n\n' + (S.user ? 'מחובר: ' + S.user : 'כנס למערכת')
-    }];
-  }
-
   if (S.page === 'פנים') {
     return [{
       id: 'pnim', title: 'צפה פנים', mode: 'זמן אמת',
@@ -622,43 +695,15 @@ function computeView() {
   if (S.page === 'ליבה') {
     return [{
       id: 'liba', title: 'ליבה · צפה פנים', mode: 'אברהם מצייר',
-      text: 'סולחא · ליבה\nאברהם מצייר את הצפה\nתקשורת אחודה פעילה\nשעה: ' + t +
+      text: 'סולחא · ליבה\nתקשורת אחודה פעילה\nשעה: ' + t +
         '\nמשתמש: ' + (S.user||'?') +
         '\nשטח: ' + S.viewport.w + 'x' + S.viewport.h +
         '\nבקשות: ' + (S.requests.length + S.done.length) +
-        '\nמחדלים: ' + open.length
+        '\nפתוחות: ' + open.length
     }];
   }
 
   return [{id:'default',title:'צפה',text:'טוען...'}];
-}
-
-function renderSubMachria() {
-  var overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:grid;place-items:center';
-  overlay.onclick = function(e) { if (e.target === overlay) hideSub(); };
-  var panel = document.createElement('div');
-  panel.style.cssText = 'background:var(--bg);border:1px solid var(--line);border-radius:20px;width:min(90vw,700px);max-height:80vh;overflow:auto;padding:20px';
-  panel.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h3 style="color:var(--accent)">מכריע — הכרעה</h3><button onclick="hideSub()" style="background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer">\u2715</button></div>';
-  panel.innerHTML += '<p style="color:var(--muted);font-size:13px;margin-bottom:14px">בדוק אם הבקשה בוצעה לשביעות רצונך.</p>';
-  if (!S.requests.length) {
-    panel.innerHTML += '<div class="empty">אין בקשות להכרעה</div>';
-  } else {
-    S.requests.forEach(function(r) {
-      var d = document.createElement('div');
-      d.className = 'item';
-      d.style.marginBottom = '8px';
-      var n = r['מספר'] || '?';
-      d.innerHTML = '<b style="color:var(--accent)">#' + n + '</b> ' + (r['מה']||'') +
-        '<br><span style="color:var(--muted);font-size:11px">' + (r['מצב']||'') + '</span>' +
-        '<div style="display:flex;gap:6px;margin-top:6px">' +
-        '<button onclick="redoReq(' + n + ',\'אושר\');hideSub()" style="font-size:11px;padding:6px 10px">אושר</button>' +
-        '<button onclick="redoReq(' + n + ',\'נדחה — ביצוע מחדש\');hideSub()" style="font-size:11px;padding:6px 10px;background:#c44;color:#fff">נדחה</button></div>';
-      panel.appendChild(d);
-    });
-  }
-  overlay.appendChild(panel);
-  return overlay;
 }
 
 function render() {
@@ -666,30 +711,7 @@ function render() {
   document.getElementById('status-mode').textContent = S.page;
   document.getElementById('status-route').textContent = S.connected ? 'מחובר' : 'מנותק';
   document.getElementById('status-source').textContent = t;
-  document.getElementById('status-meta').textContent = 'סולחא.com';
-  document.getElementById('status-note').textContent =
-    S.user ? S.user + ' · ' + S.page : 'כנס למערכת';
-
-  var side = document.querySelector('.side');
-  var navBox = document.getElementById('nav-box');
-  if (!navBox) {
-    navBox = document.createElement('section');
-    navBox.id = 'nav-box';
-    navBox.className = 'box';
-    navBox.innerHTML = '<h3>ניווט</h3>';
-    side.insertBefore(navBox, side.firstChild);
-  }
-  var navHTML = '<div style="display:flex;gap:6px;flex-wrap:wrap">';
-  if (S.user) {
-    navHTML += '<button onclick="nav(\'פנים\')" style="font-size:11px;padding:6px 10px' + (S.page==='פנים'?';border:2px solid var(--accent)':'') + '">פנים</button>';
-    if (isAdmin()) {
-      navHTML += '<button onclick="nav(\'ניהול\')" style="font-size:11px;padding:6px 10px' + (S.page==='ניהול'?';border:2px solid var(--accent)':'') + '">ניהול</button>';
-      navHTML += '<button onclick="nav(\'ליבה\')" style="font-size:11px;padding:6px 10px' + (S.page==='ליבה'?';border:2px solid var(--accent)':'') + '">ליבה</button>';
-    }
-    navHTML += '<button onclick="doLogout()" class="alt" style="font-size:11px;padding:6px 10px">יציאה</button>';
-  }
-  navHTML += '</div>';
-  navBox.innerHTML = '<h3>ניווט</h3>' + navHTML;
+  document.getElementById('status-note').textContent = S.user ? S.user + ' · ' + S.page : 'צפה פנים';
 
   renderScreens(computeView());
 
@@ -701,35 +723,24 @@ function render() {
     'שטח: ' + S.viewport.w + 'x' + S.viewport.h,
   ]);
   renderList('log-list', open.slice(-8).map(function(r) { return '#' + (r['מספר']||'?') + ' ' + (r['מה']||'').substring(0,50); }));
-
-  var existing = document.getElementById('sub-overlay');
-  if (existing) existing.remove();
-  if (S.sub === 'מכריע') {
-    var ov = renderSubMachria();
-    ov.id = 'sub-overlay';
-    document.body.appendChild(ov);
-  }
 }
 
 // ═══ אתחול ═══
 
 document.getElementById('send-btn').addEventListener('click', function() { sendRequest('בקש'); });
-document.getElementById('approve-btn').addEventListener('click', function() { showSub('מכריע'); });
+document.getElementById('approve-btn').addEventListener('click', function() { sendRequest('אשר'); });
 document.getElementById('rogez-btn').addEventListener('click', async function() {
-  await http('/api/רוגז');
+  await http('/api/רוגז').catch(function(){});
   await loadData();
 });
 
-// שחזור משתמש שמור
+// שחזור מנהל שמור
 (function() {
   try {
     var saved = JSON.parse(localStorage.getItem('sulha_user') || 'null');
-    if (saved) {
-      if (isPnim(saved)) {
-        showPnim(saved);
-      } else {
-        showHutz(saved);
-      }
+    if (saved && isPnim(saved)) {
+      activateAdmin(saved);
+      connectWs();
     }
   } catch(_) {}
 })();
