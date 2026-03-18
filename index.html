@@ -196,10 +196,9 @@
       color: var(--muted);
       border-top: 1px solid var(--line);
     }
-    .hutz-footer button {
-      background: none; border: none;
-      color: var(--muted); font: inherit; font-size: 11px;
-      cursor: pointer; text-decoration: underline;
+    .hutz-footer a {
+      color: var(--muted);
+      font-size: 11px;
       margin-inline-start: 8px;
     }
 
@@ -335,10 +334,7 @@
       </div>
 
     </div>
-    <div class="hutz-footer">
-      סולחא · תקשורת אחודה
-      <button onclick="showAdminLogin()">כניסת מנהלים</button>
-    </div>
+    <div class="hutz-footer">סולחא · תקשורת אחודה</div>
   </div>
 
   <!-- ═══ פנים ═══ -->
@@ -380,16 +376,6 @@
     </div>
   </div>
 
-  <!-- דיאלוג כניסת מנהלים -->
-  <div id="admin-login-overlay" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:grid;place-items:center" onclick="if(event.target===this)this.classList.add('hidden')">
-    <div style="background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:32px;width:min(360px,90vw);text-align:center;display:grid;gap:16px">
-      <h3 style="color:var(--accent)">כניסת מנהלים</h3>
-      <input id="admin-name" class="input" type="text" placeholder="שם מלא" style="text-align:center">
-      <button class="btn" onclick="doAdminLogin()" style="justify-self:center">כניסה</button>
-      <div id="admin-error" style="color:#e55;font-size:13px;min-height:1.2em"></div>
-    </div>
-  </div>
-
 <script>
 // ═══════════════════════════════════════
 // סולחא · דף אחד · חוץ ברירת מחדל · מנהל רואה הכל
@@ -406,28 +392,6 @@ function baseUrl() {
 }
 function http(path, opts) { return fetch((baseUrl() || '') + path, opts); }
 function isPnim(name) { return PNIM_USERS.indexOf(name) >= 0; }
-
-// ═══ כניסת מנהלים ═══
-function showAdminLogin() {
-  document.getElementById('admin-login-overlay').classList.remove('hidden');
-  document.getElementById('admin-name').focus();
-}
-
-document.getElementById('admin-name').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') doAdminLogin();
-});
-
-function doAdminLogin() {
-  var name = (document.getElementById('admin-name').value || '').trim();
-  if (!isPnim(name)) {
-    document.getElementById('admin-error').textContent = 'לא מורשה';
-    return;
-  }
-  localStorage.setItem('sulha_user', JSON.stringify(name));
-  currentAdmin = name;
-  document.getElementById('admin-login-overlay').classList.add('hidden');
-  activateAdmin(name);
-}
 
 function doLogout() {
   localStorage.removeItem('sulha_user');
@@ -734,8 +698,19 @@ document.getElementById('rogez-btn').addEventListener('click', async function() 
   await loadData();
 });
 
-// שחזור מנהל שמור
+// זיהוי אוטומטי — localStorage או URL param
 (function() {
+  // בדוק URL param: ?admin=עדי או ?admin=שחף
+  var q = new URLSearchParams(location.search);
+  var adminParam = q.get('admin');
+  if (adminParam) {
+    var nameMap = {'עדי': 'עובדיה עדי כהן', 'שחף': 'שחף גליה כהן'};
+    var fullName = nameMap[adminParam] || adminParam;
+    if (isPnim(fullName)) {
+      localStorage.setItem('sulha_user', JSON.stringify(fullName));
+    }
+  }
+  // שחזור מ-localStorage
   try {
     var saved = JSON.parse(localStorage.getItem('sulha_user') || 'null');
     if (saved && isPnim(saved)) {
