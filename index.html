@@ -20,57 +20,7 @@
       color: var(--fg);
       font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
     }
-    body { padding: 0; }
     .hidden { display: none !important; }
-
-    /* ═══ סרגל מנהל ═══ */
-    .admin-bar {
-      background: rgba(0,0,0,.4);
-      border-bottom: 1px solid var(--line);
-      padding: 8px 16px;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      font-size: 12px;
-    }
-    .admin-bar .ab-label {
-      color: var(--accent);
-      font-weight: 600;
-      margin-inline-end: 8px;
-    }
-    .admin-bar button {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 12px;
-      background: transparent;
-      color: var(--muted);
-      font: inherit;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all .15s;
-    }
-    .admin-bar button:hover { color: var(--fg); border-color: var(--accent); }
-    .admin-bar button.active {
-      background: var(--accent);
-      color: #102016;
-      border-color: var(--accent);
-    }
-    .admin-bar select {
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      color: var(--fg);
-      padding: 4px 8px;
-      font: inherit;
-      font-size: 12px;
-    }
-    .admin-bar .ab-sep {
-      width: 1px;
-      height: 20px;
-      background: var(--line);
-      margin: 0 4px;
-    }
 
     /* ═══ חוץ ═══ */
     .hutz {
@@ -120,8 +70,7 @@
       background: rgba(255,255,255,.03);
       color: var(--fg);
       padding: 11px 14px;
-      font: inherit;
-      font-size: 14px;
+      font: inherit; font-size: 14px;
       outline: none;
     }
     .input:focus { border-color: var(--accent); }
@@ -131,13 +80,12 @@
       padding: 11px 18px;
       background: var(--accent); color: #102016;
       font: inherit; font-size: 14px; font-weight: 600;
-      cursor: pointer;
-      justify-self: start;
+      cursor: pointer; justify-self: start;
     }
     .btn:hover { opacity: .85; }
     .sent-msg { color: var(--accent); font-size: 13px; }
 
-    /* צל — מפת קונדסאים תלת מימד */
+    /* מפת קונדסאים תלת מימד */
     .shadow-box {
       border: 1px solid var(--line);
       border-radius: 20px;
@@ -166,23 +114,18 @@
       position: relative;
     }
     .map3d {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       position: relative;
       transform-style: preserve-3d;
       transform: rotateX(55deg) rotateZ(-15deg);
       transition: transform .6s;
     }
-    .map3d:hover {
-      transform: rotateX(50deg) rotateZ(-10deg);
-    }
+    .map3d:hover { transform: rotateX(50deg) rotateZ(-10deg); }
     .map3d-node {
       position: absolute;
-      width: 90px;
-      height: 90px;
+      width: 90px; height: 90px;
       border-radius: 16px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       text-align: center;
       background: rgba(10, 17, 19, .85);
       border: 1px solid var(--line);
@@ -192,174 +135,59 @@
       backface-visibility: hidden;
     }
     .map3d-node .n-icon { font-size: 26px; }
-    .map3d-node .n-name {
-      font-size: 10px;
-      color: var(--fg);
-      font-weight: 600;
-      line-height: 1.2;
-    }
-    .map3d-node .n-status {
-      font-size: 9px;
-      color: var(--muted);
-    }
+    .map3d-node .n-name { font-size: 10px; color: var(--fg); font-weight: 600; line-height: 1.2; }
+    .map3d-node .n-status { font-size: 9px; color: var(--muted); }
     .map3d-node.active {
       border-color: var(--accent);
       background: rgba(154,226,176,.1);
       box-shadow: 0 0 20px rgba(154,226,176,.2);
     }
-    .map3d-node.active .n-icon {
-      animation: bob 1.5s ease-in-out infinite;
-    }
-    @keyframes bob {
-      0%,100% { transform: translateZ(0); }
-      50% { transform: translateZ(20px); }
-    }
+    .map3d-node.active .n-icon { animation: bob 1.5s ease-in-out infinite; }
+    @keyframes bob { 0%,100% { transform: translateZ(0); } 50% { transform: translateZ(20px); } }
     .map3d-link {
-      position: absolute;
-      height: 1px;
+      position: absolute; height: 1px;
       background: var(--line);
       transform-origin: 0 0;
-      pointer-events: none;
-      opacity: .4;
+      pointer-events: none; opacity: .4;
     }
-    .map3d-link.active {
-      background: var(--accent);
-      opacity: .6;
-      height: 2px;
-    }
+    .map3d-link.active { background: var(--accent); opacity: .6; height: 2px; }
 
     .hutz-footer {
-      padding: 16px;
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
+      padding: 16px; text-align: center;
+      font-size: 11px; color: var(--muted);
       border-top: 1px solid var(--line);
     }
-    .hutz-footer a {
-      color: var(--muted);
-      font-size: 11px;
-      margin-inline-start: 8px;
-    }
 
-    /* ═══ פנים ═══ */
-    .pnim {
-      min-height: 100vh;
+    /* פנים — נטען דינמית */
+    #sf {
+      position: fixed; inset: 0; z-index: 500;
+      background: var(--bg);
+      overflow: auto;
     }
-    .shell {
-      min-height: calc(100vh - 40px);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: var(--panel);
-      display: grid;
-      grid-template-rows: auto auto 1fr;
-      overflow: hidden;
-      margin: 8px;
-    }
-    .bar {
-      display: flex; gap: 12px; align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--line);
-      color: var(--muted); font-size: 13px;
-    }
-    .status { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .chip {
-      padding: 6px 10px; border-radius: 999px;
-      border: 1px solid var(--line); color: var(--accent);
-    }
-    .layout {
-      display: grid; grid-template-columns: minmax(0, 1fr) 360px;
-      min-height: 0;
-    }
-    .view { padding: 18px; min-height: 0; overflow: auto; }
-    .side {
-      border-inline-start: 1px solid var(--line);
-      padding: 18px;
-      display: grid; grid-template-rows: auto auto 1fr;
-      gap: 14px; min-height: 0;
-    }
-    .box {
-      border: 1px solid var(--line); border-radius: 18px;
-      padding: 14px; background: rgba(255,255,255,.02);
-    }
-    .box h3 { margin: 0 0 10px; color: var(--accent); font-size: 14px; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    button.pnim-btn {
-      border: 0; border-radius: 999px; padding: 10px 14px;
-      background: var(--accent); color: #102016;
-      font: inherit; cursor: pointer;
-    }
-    button.alt { background: #dfe9dd; }
-    #screens { display: grid; gap: 14px; }
-    .screen {
-      border: 1px solid var(--line); border-radius: 20px;
-      overflow: hidden; background: rgba(255,255,255,.02);
-    }
-    .screen-head {
-      display: flex; gap: 10px; align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px; border-bottom: 1px solid var(--line);
-      color: var(--muted); font-size: 13px;
-    }
-    .screen-body { padding: 14px; display: grid; gap: 10px; }
-    .line { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; min-height: 24px; }
-    .glyph {
-      display: inline-grid; place-items: center;
-      min-width: 1ch; min-height: 1.6em; padding-inline: .08em;
-      border-radius: 6px; position: relative;
-    }
-    .glyph[data-kind="space"] { opacity: .35; }
-    .glyph:hover { background: rgba(154,226,176,.12); }
-    .list { display: grid; gap: 8px; max-height: 100%; overflow: auto; }
-    .item {
-      border: 1px solid var(--line); border-radius: 14px;
-      padding: 10px 12px; font-size: 13px;
-    }
-    .empty { color: var(--muted); }
 
     @media (max-width: 960px) {
-      .layout { grid-template-columns: 1fr; }
-      .side { border-inline-start: 0; border-top: 1px solid var(--line); }
-      .shadow-stage { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+      .map3d-wrap { height: 260px; }
+      .map3d-node { width: 70px; height: 70px; }
+      .map3d-node .n-icon { font-size: 20px; }
+      .map3d-node .n-name { font-size: 9px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- ═══ סרגל מנהל (רק למנהלים) ═══ -->
-  <div id="admin-bar" class="admin-bar hidden">
-    <span class="ab-label">מנהל</span>
-    <button id="ab-hutz" onclick="adminView('חוץ')">חוץ</button>
-    <button id="ab-pnim" onclick="adminView('פנים')">פנים</button>
-    <button id="ab-nihul" onclick="adminView('ניהול')">ניהול</button>
-    <button id="ab-liba" onclick="adminView('ליבה')">ליבה</button>
-    <div class="ab-sep"></div>
-    <select id="ab-user" onchange="adminSwitchUser(this.value)">
-      <option value="עובדיה עדי כהן">עדי</option>
-      <option value="שחף גליה כהן">שחף</option>
-      <option value="אורח">אורח (חוץ)</option>
-    </select>
-    <div class="ab-sep"></div>
-    <button onclick="doLogout()" style="color:#e55">יציאה</button>
-  </div>
-
-  <!-- ═══ חוץ ═══ -->
+  <!-- חוץ — מה שכולם רואים -->
   <div id="page-hutz" class="hutz">
     <div class="hutz-header">
       <h1>סולחא</h1>
       <p>שלום עולם</p>
     </div>
     <div class="hutz-body">
-
-      <!-- צל — מפת קונדסאים תלת מימד -->
       <div class="shadow-box">
         <h3><span class="shadow-pulse"></span>מה קורה על הבמה</h3>
         <div class="map3d-wrap">
           <div id="map3d" class="map3d"></div>
         </div>
       </div>
-
-      <!-- איסוף פרטים -->
       <div class="hutz-card">
         <h3>רוצה לדבר?</h3>
         <div class="hutz-form">
@@ -370,122 +198,26 @@
           <label>פירוט</label>
           <textarea id="hutz-detail" class="input" placeholder="ספר עוד..."></textarea>
           <button class="btn" onclick="sendHutz()">שלח</button>
-          <div id="hutz-sent" class="sent-msg hidden">נשלח בהצלחה</div>
+          <div id="hutz-sent" class="sent-msg hidden">נשלח</div>
         </div>
       </div>
-
     </div>
     <div class="hutz-footer">סולחא</div>
   </div>
 
-  <!-- ═══ פנים ═══ -->
-  <div id="page-pnim" class="pnim hidden">
-    <div class="shell">
-      <div class="bar">
-        <div class="status">
-          <span class="chip" id="status-mode">פנים</span>
-          <span class="chip" id="status-route">מנותק</span>
-          <span class="chip" id="status-source">...</span>
-        </div>
-        <div id="status-meta">סולחא.com</div>
-      </div>
-      <div class="bar" id="status-note">צפה פנים</div>
-      <div class="layout">
-        <main class="view">
-          <div id="screens"></div>
-        </main>
-        <aside class="side">
-          <section class="box">
-            <h3>שיחה</h3>
-            <input id="request-input" class="input" type="text" placeholder="בקש כיוון">
-            <div class="actions">
-              <button class="pnim-btn" id="send-btn">שלח</button>
-              <button class="pnim-btn alt" id="approve-btn">אשר</button>
-              <button class="pnim-btn" id="rogez-btn" style="background:#c44;color:#fff">רוגז</button>
-            </div>
-          </section>
-          <section class="box">
-            <h3>כיוון</h3>
-            <div id="route-meta" class="list"></div>
-          </section>
-          <section class="box">
-            <h3>רשומות</h3>
-            <div id="log-list" class="list"></div>
-          </section>
-        </aside>
-      </div>
-    </div>
-  </div>
+  <!-- פנים — נטען דינמית רק למורשים -->
+  <div id="sf" class="hidden"></div>
 
 <script>
 // ═══════════════════════════════════════
-// סולחא · דף אחד · חוץ ברירת מחדל · מנהל רואה הכל
+// סולחא · חוץ בלבד
+// חטטן ב-View Source רואה רק קונדסאים
+// הפנים נטען מהשרת רק למורשים
 // ═══════════════════════════════════════
 
-var PNIM_USERS = ['עובדיה עדי כהן', 'שחף גליה כהן'];
-var currentView = 'חוץ';
-var currentAdmin = null;
+// ═══ מפת קונדסאים תלת מימד ═══
 
-// ═══ תקשורת ═══
-function baseUrl() {
-  var q = new URLSearchParams(location.search);
-  return (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
-}
-function http(path, opts) { return fetch((baseUrl() || '') + path, opts); }
-function isPnim(name) { return PNIM_USERS.indexOf(name) >= 0; }
-
-function doLogout() {
-  localStorage.removeItem('sulha_user');
-  currentAdmin = null;
-  currentView = 'חוץ';
-  document.getElementById('admin-bar').classList.add('hidden');
-  document.getElementById('page-pnim').classList.add('hidden');
-  document.getElementById('page-hutz').classList.remove('hidden');
-}
-
-function activateAdmin(name) {
-  currentAdmin = name;
-  document.getElementById('admin-bar').classList.remove('hidden');
-  document.getElementById('ab-user').value = name;
-  S.user = name;
-  adminView('פנים');
-}
-
-// ═══ סרגל מנהל — toggle תצוגות ═══
-function adminView(view) {
-  currentView = view;
-  // עדכון כפתורים
-  ['ab-hutz','ab-pnim','ab-nihul','ab-liba'].forEach(function(id) {
-    document.getElementById(id).classList.remove('active');
-  });
-  var map = {'חוץ':'ab-hutz','פנים':'ab-pnim','ניהול':'ab-nihul','ליבה':'ab-liba'};
-  if (map[view]) document.getElementById(map[view]).classList.add('active');
-
-  if (view === 'חוץ') {
-    document.getElementById('page-pnim').classList.add('hidden');
-    document.getElementById('page-hutz').classList.remove('hidden');
-  } else {
-    document.getElementById('page-hutz').classList.add('hidden');
-    document.getElementById('page-pnim').classList.remove('hidden');
-    S.page = view;
-    loadData();
-    render();
-  }
-}
-
-function adminSwitchUser(name) {
-  S.user = name;
-  if (name === 'אורח') {
-    adminView('חוץ');
-  } else {
-    loadData();
-    render();
-  }
-}
-
-// ═══ חוץ — מפת קונדסאים תלת מימד ═══
-
-var KONDENSAIM = [
+var K = [
   {icon: '🎪', name: 'קרקס הפלאים', states: ['מחמם', 'על הבמה', 'הפסקה', 'סיום'], x: 15, y: 15},
   {icon: '🏗️', name: 'בונה מגדלים', states: ['מתכנן', 'יוצק', 'מטפס', 'מנוח'], x: 55, y: 8},
   {icon: '🎭', name: 'תיאטרון הצל', states: ['חזרה', 'הצגה', 'מחיאות', 'וילון'], x: 85, y: 20},
@@ -493,116 +225,81 @@ var KONDENSAIM = [
   {icon: '🌊', name: 'גולש גלים', states: ['ממתין', 'תופס גל', 'גולש', 'צולל'], x: 45, y: 42},
   {icon: '🎨', name: 'סטודיו הצבע', states: ['מערבב', 'צובע', 'מייבש', 'תולה'], x: 78, y: 48},
   {icon: '🔬', name: 'מעבדת חידות', states: ['חוקר', 'מנסה', 'מגלה', 'רושם'], x: 25, y: 75},
-  {icon: '🎵', name: 'תזמורת רחוב', states: ['מכוון', 'מנגן', 'סולו', 'קצה'], x: 62, y: 72},
+  {icon: '🎵', name: 'תזמורת רחוב', states: ['מכוונן', 'מנגן', 'סולו', 'קצה'], x: 62, y: 72},
   {icon: '🧪', name: 'מפעל הבועות', states: ['ממלא', 'מנפח', 'משחרר', 'פוצץ'], x: 40, y: 88},
   {icon: '🎡', name: 'גלגל ענק', states: ['עולה', 'בפסגה', 'יורד', 'עוצר'], x: 90, y: 78},
 ];
+var L = [[0,1],[1,2],[0,3],[3,4],[4,5],[2,5],[3,6],[4,7],[6,7],[6,8],[7,9],[8,9],[1,4]];
+var ss = {};
+var al = 3;
 
-// קשרים בין קונדסאים (אינדקסים)
-var LINKS = [[0,1],[1,2],[0,3],[3,4],[4,5],[2,5],[3,6],[4,7],[6,7],[6,8],[7,9],[8,9],[1,4]];
-
-var shadowState = {};
-var activityLevel = 0; // 0-10, מושפע מהשרת
-
-// שואב רמת פעילות מהשרת (בלי לחשוף מידע!)
-function fetchActivityLevel() {
-  http('/api/שעה').then(function(r) { return r.json(); }).then(function(d) {
-    // משתמשים רק בשניות כ-seed לפעילות — אף מילה מבפנים
-    var sec = parseInt((d['שעה'] || '').split(':').pop()) || 0;
-    activityLevel = Math.min(10, Math.max(1, Math.round(sec / 6)));
-  }).catch(function() {
-    activityLevel = Math.floor(Math.random() * 5) + 1;
+function bm() {
+  var m = document.getElementById('map3d');
+  m.innerHTML = '';
+  L.forEach(function(l, i) {
+    var a = K[l[0]], b = K[l[1]];
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var len = Math.sqrt(dx*dx + dy*dy);
+    var ang = Math.atan2(dy, dx) * 180 / Math.PI;
+    var e = document.createElement('div');
+    e.className = 'map3d-link'; e.id = 'lk-' + i;
+    e.style.cssText = 'left:' + a.x + '%;top:' + a.y + '%;width:' + len + '%;transform:rotate(' + ang + 'deg)';
+    m.appendChild(e);
+  });
+  K.forEach(function(k, i) {
+    var n = document.createElement('div');
+    n.className = 'map3d-node'; n.id = 'kn-' + i;
+    n.style.cssText = 'left:calc(' + k.x + '% - 45px);top:calc(' + k.y + '% - 45px);transform:translateZ(0)';
+    n.innerHTML = '<div class="n-icon">' + k.icon + '</div><div class="n-name">' + k.name + '</div><div class="n-status" id="ks-' + i + '"></div>';
+    m.appendChild(n);
   });
 }
 
-function buildMap() {
-  var map = document.getElementById('map3d');
-  map.innerHTML = '';
-
-  // קשרים
-  LINKS.forEach(function(link, li) {
-    var a = KONDENSAIM[link[0]];
-    var b = KONDENSAIM[link[1]];
-    var dx = b.x - a.x;
-    var dy = b.y - a.y;
-    var len = Math.sqrt(dx * dx + dy * dy);
-    var angle = Math.atan2(dy, dx) * 180 / Math.PI;
-    var line = document.createElement('div');
-    line.className = 'map3d-link';
-    line.id = 'link-' + li;
-    line.style.cssText = 'left:' + a.x + '%;top:' + a.y + '%;width:' + len + '%;transform:rotate(' + angle + 'deg)';
-    map.appendChild(line);
+function us() {
+  var ac = Math.max(1, Math.round(al * K.length / 10));
+  K.forEach(function(k, i) {
+    if (!ss[i] || Math.random() < 0.35) ss[i] = Math.floor(Math.random() * k.states.length);
+    var si = ss[i];
+    var on = i < ac && (si === 1 || si === 2);
+    var n = document.getElementById('kn-' + i);
+    var s = document.getElementById('ks-' + i);
+    if (!n || !s) return;
+    if (on) { n.classList.add('active'); n.style.transform = 'translateZ(' + (10 + Math.random() * 25) + 'px)'; }
+    else { n.classList.remove('active'); n.style.transform = 'translateZ(0)'; }
+    s.textContent = k.states[si];
   });
-
-  // צמתים
-  KONDENSAIM.forEach(function(k, i) {
-    var node = document.createElement('div');
-    node.className = 'map3d-node';
-    node.id = 'knode-' + i;
-    node.style.cssText = 'left:calc(' + k.x + '% - 45px);top:calc(' + k.y + '% - 45px);transform:translateZ(0px)';
-    node.innerHTML =
-      '<div class="n-icon">' + k.icon + '</div>' +
-      '<div class="n-name">' + k.name + '</div>' +
-      '<div class="n-status" id="kstat-' + i + '"></div>';
-    map.appendChild(node);
+  L.forEach(function(l, i) {
+    var e = document.getElementById('lk-' + i);
+    if (!e) return;
+    var a = document.getElementById('kn-' + l[0]);
+    var b = document.getElementById('kn-' + l[1]);
+    if (a && b && a.classList.contains('active') && b.classList.contains('active')) e.classList.add('active');
+    else e.classList.remove('active');
   });
 }
 
-function updateShadow() {
-  var activeCount = Math.max(1, Math.round(activityLevel * KONDENSAIM.length / 10));
-
-  KONDENSAIM.forEach(function(k, i) {
-    if (!shadowState[i] || Math.random() < 0.35) {
-      shadowState[i] = Math.floor(Math.random() * k.states.length);
-    }
-    var stateIdx = shadowState[i];
-    var isActive = i < activeCount && (stateIdx === 1 || stateIdx === 2);
-
-    var node = document.getElementById('knode-' + i);
-    var stat = document.getElementById('kstat-' + i);
-    if (!node || !stat) return;
-
-    if (isActive) {
-      node.classList.add('active');
-      node.style.transform = 'translateZ(' + (10 + Math.random() * 25) + 'px)';
-    } else {
-      node.classList.remove('active');
-      node.style.transform = 'translateZ(0px)';
-    }
-    stat.textContent = k.states[stateIdx];
-  });
-
-  // קשרים מוארים
-  LINKS.forEach(function(link, li) {
-    var el = document.getElementById('link-' + li);
-    if (!el) return;
-    var a = document.getElementById('knode-' + link[0]);
-    var b = document.getElementById('knode-' + link[1]);
-    if (a && b && a.classList.contains('active') && b.classList.contains('active')) {
-      el.classList.add('active');
-    } else {
-      el.classList.remove('active');
-    }
-  });
+function fa() {
+  var now = new Date();
+  al = Math.min(10, Math.max(1, Math.round(now.getSeconds() / 6)));
 }
 
-buildMap();
-updateShadow();
-fetchActivityLevel();
-setInterval(updateShadow, 3500);
-setInterval(fetchActivityLevel, 8000);
+bm(); us(); fa();
+setInterval(us, 3500);
+setInterval(fa, 8000);
 
-// ═══ חוץ — שליחת פרטים ═══
+// ═══ שליחת פרטים ═══
+
 function sendHutz() {
   var name = (document.getElementById('hutz-name').value || '').trim() || 'אורח';
   var subject = document.getElementById('hutz-subject').value.trim();
   var detail = document.getElementById('hutz-detail').value.trim();
   if (!subject) return;
   var text = subject + (detail ? ' — ' + detail : '');
-  http('/api/אחוד', {
+  var base = (new URLSearchParams(location.search).get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
+  fetch((base || '') + '/api/hutz', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({'מי': name, 'מה': text, 'פעולה': 'בקשה', 'ממשק': 'חוץ', 'דף': 'חוץ', 'משתמש': name})
+    body: JSON.stringify({name: name, text: text})
   }).catch(function(){});
   document.getElementById('hutz-subject').value = '';
   document.getElementById('hutz-detail').value = '';
@@ -611,223 +308,30 @@ function sendHutz() {
   setTimeout(function() { msg.classList.add('hidden'); }, 3000);
 }
 
-// ═══════════════════════════════════════
-// פנים
-// ═══════════════════════════════════════
+// ═══ הקרנה ═══
 
-var S = {
-  user: null, page: 'פנים', sub: null,
-  route: null, source: '', time: '',
-  requests: [], done: [],
-  ws: null, connected: false,
-  viewport: {w: innerWidth, h: innerHeight},
-  sent: {},
-};
-
-function isAdmin() { return PNIM_USERS.indexOf(S.user) >= 0; }
-
-function connectWs() {
-  var q = new URLSearchParams(location.search);
-  var explicit = q.get('ws') || localStorage.getItem('sulha_ws') || '';
-  var host = location.hostname;
-  if (!explicit && host !== 'localhost' && host !== '127.0.0.1' && !host.startsWith('192.168.')) return;
-  var url = explicit || ((location.protocol === 'https:' ? 'wss://' : 'ws://') + host + ':8772');
-  try {
-    S.ws = new WebSocket(url);
-    S.ws.onopen = function() { S.connected = true; S.source = 'WS'; render(); };
-    S.ws.onclose = function() { S.connected = false; render(); };
-    S.ws.onmessage = function(e) {
-      try {
-        var d = JSON.parse(e.data);
-        if (d['מה'] === 'צפה_אחודה' || d['מה'] === 'מבקש') loadData();
-      } catch(_) {}
-    };
-  } catch(_) {}
-}
-
-async function loadData() {
-  try {
-    var ps = [http('/api/שעה').then(function(r){return r.json();})];
-    if (S.user) ps.push(http('/api/צפה-מבקש?' + new URLSearchParams({
-      'משתמש': S.user,
-      'דף': isAdmin() ? 'פיתוח' : 'משתמש',
-      'רוחב': String(S.viewport.w),
-      'גובה': String(S.viewport.h),
-    })).then(function(r){return r.json();}));
-    var r = await Promise.all(ps);
-    S.time = r[0]['שעה'] || '';
-    if (r[1]) { S.requests = r[1]['בקשות'] || []; S.done = r[1]['בוצעו'] || []; }
-  } catch(_) {}
-  render();
-}
-
-async function sendRequest(kind) {
-  var input = document.getElementById('request-input');
-  var text = (input.value || '').trim();
-  if (!text) return;
-  var key = (S.user || '?') + '|' + kind + '|' + text;
-  if (S.sent[key]) return;
-  S.sent[key] = true;
-  await http('/api/אחוד', {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      'מי': S.user || 'עובדיה עדי כהן',
-      'מה': text, 'פעולה': kind,
-      'ממשק': 'סולחא.com', 'דף': S.page
-    })
-  }).catch(function(){});
-  input.value = '';
-  await loadData();
-}
-
-async function redoReq(num, direction) {
-  if (!S.user) return;
-  var key = S.user + '|redo|' + num + '|' + direction;
-  if (S.sent[key]) return;
-  S.sent[key] = true;
-  await http('/api/מבקש/בצע-מחדש', {
-    method: 'POST', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({'משתמש': S.user, 'מספר': num, 'כיוון': direction})
-  }).catch(function(){});
-  await loadData();
-}
-
-function glyphNode(screenId, li, gi, ch) {
-  var span = document.createElement('span');
-  span.className = 'glyph';
-  span.dataset.address = screenId + '/' + li + '/' + gi;
-  span.dataset.kind = ch === ' ' ? 'space' : 'glyph';
-  span.textContent = ch === ' ' ? '\u00B7' : ch;
-  return span;
-}
-
-function screenNode(screen, idx) {
-  var id = screen.id || 'screen-' + idx;
-  var root = document.createElement('section');
-  root.className = 'screen';
-  var head = document.createElement('div');
-  head.className = 'screen-head';
-  head.innerHTML = '<span>' + (screen.title || id) + '</span><span>' + (screen.mode || 'צפה') + '</span>';
-  var body = document.createElement('div');
-  body.className = 'screen-body';
-  var lines = Array.isArray(screen.lines) ? screen.lines : (screen.text || screen.body || '').split(/\r?\n/);
-  lines.forEach(function(line, li) {
-    var row = document.createElement('div');
-    row.className = 'line';
-    Array.from(line || ' ').forEach(function(ch, gi) { row.appendChild(glyphNode(id, li, gi, ch)); });
-    body.appendChild(row);
-  });
-  root.append(head, body);
-  return root;
-}
-
-function renderScreens(screens) {
-  var mount = document.getElementById('screens');
-  mount.innerHTML = '';
-  if (!screens || !screens.length) {
-    mount.innerHTML = '<div class="empty">אין צפה פעילה.</div>';
-    return;
-  }
-  screens.forEach(function(s, i) { mount.appendChild(screenNode(s, i)); });
-}
-
-function renderList(id, rows) {
-  var el = document.getElementById(id);
-  el.innerHTML = '';
-  if (!rows.length) { el.innerHTML = '<div class="empty">אין</div>'; return; }
-  rows.forEach(function(r) { var d = document.createElement('div'); d.className = 'item'; d.textContent = r; el.appendChild(d); });
-}
-
-function computeView() {
-  S.viewport = {w: innerWidth, h: innerHeight};
-  var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
-  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
-
-  if (S.page === 'פנים') {
-    return [{
-      id: 'pnim', title: 'צפה פנים', mode: 'זמן אמת',
-      text: 'משתמש: ' + (S.user || '?') +
-        '\nבקשות פתוחות: ' + open.length +
-        '\nבוצעו: ' + S.done.length +
-        '\nשעה: ' + t +
-        '\nשטח: ' + S.viewport.w + 'x' + S.viewport.h
-    }];
-  }
-
-  if (S.page === 'ניהול') {
-    var all = [].concat(S.requests, S.done).sort(function(a,b) { return (a['מספר']||0)-(b['מספר']||0); });
-    var lines = all.slice(-15).map(function(r) {
-      var st = r['מצב'] === 'בוצע' ? '\u2713' : '\u2717';
-      return st + ' #' + (r['מספר']||'?') + ' ' + (r['מה']||'').substring(0,60);
-    });
-    return [{
-      id: 'nihul', title: 'ניהול', mode: 'בקשות: ' + all.length,
-      text: lines.join('\n') || 'אין בקשות'
-    }];
-  }
-
-  if (S.page === 'ליבה') {
-    return [{
-      id: 'liba', title: 'ליבה · צפה פנים', mode: 'אברהם מצייר',
-      text: 'סולחא · ליבה\nתקשורת אחודה פעילה\nשעה: ' + t +
-        '\nמשתמש: ' + (S.user||'?') +
-        '\nשטח: ' + S.viewport.w + 'x' + S.viewport.h +
-        '\nבקשות: ' + (S.requests.length + S.done.length) +
-        '\nפתוחות: ' + open.length
-    }];
-  }
-
-  return [{id:'default',title:'צפה',text:'טוען...'}];
-}
-
-function render() {
-  var t = S.time ? S.time.split('T')[1].split('.')[0] : '...';
-  document.getElementById('status-mode').textContent = S.page;
-  document.getElementById('status-route').textContent = S.connected ? 'מחובר' : 'מנותק';
-  document.getElementById('status-source').textContent = t;
-  document.getElementById('status-note').textContent = S.user ? S.user + ' · ' + S.page : 'צפה פנים';
-
-  renderScreens(computeView());
-
-  var open = S.requests.filter(function(r) { return r['מצב'] !== 'בוצע'; });
-  renderList('route-meta', [
-    'משתמש: ' + (S.user || 'אורח'),
-    'בקשות: ' + (S.requests.length + S.done.length),
-    'פתוחות: ' + open.length,
-    'שטח: ' + S.viewport.w + 'x' + S.viewport.h,
-  ]);
-  renderList('log-list', open.slice(-8).map(function(r) { return '#' + (r['מספר']||'?') + ' ' + (r['מה']||'').substring(0,50); }));
-}
-
-// ═══ אתחול ═══
-
-document.getElementById('send-btn').addEventListener('click', function() { sendRequest('בקש'); });
-document.getElementById('approve-btn').addEventListener('click', function() { sendRequest('אשר'); });
-document.getElementById('rogez-btn').addEventListener('click', async function() {
-  await http('/api/רוגז').catch(function(){});
-  await loadData();
-});
-
-// זיהוי אוטומטי — localStorage או URL param
 (function() {
-  // בדוק URL param: ?admin=עדי או ?admin=שחף
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem('sulha_user') || 'null'); } catch(_) {}
   var q = new URLSearchParams(location.search);
-  var adminParam = q.get('admin');
-  if (adminParam) {
-    var nameMap = {'עדי': 'עובדיה עדי כהן', 'שחף': 'שחף גליה כהן'};
-    var fullName = nameMap[adminParam] || adminParam;
-    if (isPnim(fullName)) {
-      localStorage.setItem('sulha_user', JSON.stringify(fullName));
-    }
+  var p = q.get('k');
+  if (p) {
+    var m = {'עדי': 'עובדיה עדי כהן', 'שחף': 'שחף גליה כהן'};
+    if (m[p]) { saved = m[p]; localStorage.setItem('sulha_user', JSON.stringify(saved)); }
   }
-  // שחזור מ-localStorage
-  try {
-    var saved = JSON.parse(localStorage.getItem('sulha_user') || 'null');
-    if (saved && isPnim(saved)) {
-      activateAdmin(saved);
-      connectWs();
-    }
-  } catch(_) {}
+  if (!saved) return;
+  // בקש מהשרת את ההקרנה — השרת מחליט מה לתת
+  var base = (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
+  if (!base) return; // בלי שרת — אין פנים
+  var frame = document.getElementById('sf');
+  fetch(base + '/api/v?user=' + encodeURIComponent(saved))
+    .then(function(r) { if (!r.ok) throw 0; return r.text(); })
+    .then(function(html) {
+      frame.innerHTML = html;
+      frame.classList.remove('hidden');
+      document.getElementById('page-hutz').classList.add('hidden');
+    })
+    .catch(function() {}); // אין שרת = נשאר בחוץ בשקט
 })();
 </script>
 </body>
