@@ -158,13 +158,6 @@
       border-top: 1px solid var(--line);
     }
 
-    /* פנים — נטען דינמית */
-    #sf {
-      position: fixed; inset: 0; z-index: 500;
-      background: var(--bg);
-      overflow: auto;
-    }
-
     @media (max-width: 960px) {
       .map3d-wrap { height: 260px; }
       .map3d-node { width: 70px; height: 70px; }
@@ -205,8 +198,6 @@
     <div class="hutz-footer">סולחא</div>
   </div>
 
-  <!-- פנים — נטען דינמית רק למורשים -->
-  <div id="sf" class="hidden"></div>
 
 <script>
 // ═══════════════════════════════════════
@@ -320,18 +311,9 @@ function sendHutz() {
     if (m[p]) { saved = m[p]; localStorage.setItem('sulha_user', JSON.stringify(saved)); }
   }
   if (!saved) return;
-  // בקש מהשרת את ההקרנה — השרת מחליט מה לתת
-  var base = (q.get('api') || localStorage.getItem('sulha_unified_api') || '').replace(/\/$/, '');
-  if (!base) return; // בלי שרת — אין פנים
-  var frame = document.getElementById('sf');
-  fetch(base + '/api/v?user=' + encodeURIComponent(saved))
-    .then(function(r) { if (!r.ok) throw 0; return r.text(); })
-    .then(function(html) {
-      frame.innerHTML = html;
-      frame.classList.remove('hidden');
-      document.getElementById('page-hutz').classList.add('hidden');
-    })
-    .catch(function() {}); // אין שרת = נשאר בחוץ בשקט
+  var allowed = ['עובדיה עדי כהן', 'שחף גליה כהן'];
+  if (allowed.indexOf(saved) < 0) return;
+  window.location.href = '/p.html';
 })();
 </script>
 </body>
