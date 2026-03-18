@@ -266,6 +266,7 @@
       locked: false,
       lastVersion: '',
       source: '',
+      apiBase: '',
     };
 
     function baseUrl() {
@@ -281,8 +282,27 @@
     }
 
     function http(path, opts) {
-      const base = baseUrl();
+      const base = STATE.apiBase || baseUrl();
       return fetch((base ? base : '') + path, opts);
+    }
+
+    function candidates() {
+      const explicit = baseUrl();
+      const list = [];
+      if (explicit) list.push(explicit);
+      list.push('');
+      list.push('http://127.0.0.1:8771');
+      list.push('http://127.0.0.1:8781');
+      return [...new Set(list)];
+    }
+
+    async function jsonOrThrow(response) {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch (_) {
+        throw new Error(text.slice(0, 120) || 'bad-json');
+      }
     }
 
     function makeAddress(screenId, lineIndex, glyphIndex, char) {
@@ -434,29 +454,76 @@
     }
 
     async function pullDirection() {
-      const response = await http('/api/אחוד?פעולה=צפה');
-      const packet = await response.json();
-      STATE.source = 'HTTP';
-      lockRoute(normalize(packet));
+      let lastError = 'אין מענה';
+      for (const base of candidates()) {
+        try {
+          let response = await fetch((base ? base : '') + '/api/אחוד?פעולה=צפה');
+          if (response.ok) {
+            STATE.apiBase = base;
+            STATE.source = base ? `HTTP ${base}` : 'HTTP';
+            lockRoute(normalize(await jsonOrThrow(response)));
+            return;
+          }
+          response = await fetch((base ? base : '') + '/api/מצב');
+          if (response.ok) {
+            STATE.apiBase = base;
+            STATE.source = base ? `HTTP ${base}` : 'HTTP';
+            lockRoute(normalize(await jsonOrThrow(response)));
+            return;
+          }
+          lastError = `${response.status}`;
+        } catch (error) {
+          lastError = String(error.message || error);
+        }
+      }
+      throw new Error(lastError);
     }
 
     async function sendRequest(kind) {
       const input = document.getElementById('request-input');
       const text = input.value.trim();
       if (!text && kind !== 'אשר') return;
-      const response = await http('/api/אחוד', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          מי: 'עובדיה עדי כהן',
-          מה: text || 'אשר',
-          פעולה: kind,
-          ממשק: 'סולחא.com',
-          דף: 'ראשי',
-        }),
-      });
-      const packet = await response.json();
-      STATE.source = 'HTTP';
+      let packet = null;
+      let lastError = 'אין מענה';
+      for (const base of candidates()) {
+        try {
+          const body = JSON.stringify({
+            מי: 'עובדיה עדי כהן',
+            מה: text || 'אשר',
+            טקסט: text || 'אשר',
+            פעולה: kind,
+            ממשק: 'סולחא.com',
+            דף: 'ראשי',
+          });
+          let response = await fetch((base ? base : '') + '/api/אחוד', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+          });
+          if (response.ok) {
+            packet = await jsonOrThrow(response);
+            STATE.apiBase = base;
+            break;
+          }
+          response = kind === 'אשר'
+            ? await fetch((base ? base : '') + '/api/אשר', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+            : await fetch((base ? base : '') + '/api/שיחה', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ טקסט: text, מאת: 'עובדיה עדי כהן' }),
+              });
+          if (response.ok) {
+            packet = await jsonOrThrow(response);
+            STATE.apiBase = base;
+            break;
+          }
+          lastError = `${response.status}`;
+        } catch (error) {
+          lastError = String(error.message || error);
+        }
+      }
+      if (!packet) throw new Error(lastError);
+      STATE.source = STATE.apiBase ? `HTTP ${STATE.apiBase}` : 'HTTP';
       lockRoute(normalize(packet));
       input.value = '';
     }
@@ -481,9 +548,9 @@
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission().catch(() => {});
     }
-    pullDirection().catch(() => {
+    pullDirection().catch((error) => {
       lockRoute(normalize({
-        note: 'התקשורת האחודה לא ענתה.',
+        note: `התקשורת האחודה לא ענתה: ${String(error.message || error)}`,
         log: ['רוגז: אין מענה מן התקשורת האחודה'],
         screens: [{ title: 'רוגז', text: 'אין מענה מן התקשורת האחודה' }],
       }));
