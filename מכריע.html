@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>סולחא · מכריע</title>
+  <title>סולחא · שער צומת</title>
   <style>
     :root {
-      --paper: #f3eadc;
-      --ink: #231f19;
-      --card: #fffaf1;
-      --line: #d8cab3;
-      --green: #1f7a4d;
-      --muted: #74695c;
+      --bg: #10181b;
+      --mist: #dae7df;
+      --line: rgba(218,231,223,.18);
+      --glass: rgba(18,27,31,.72);
+      --signal: #9ee7c2;
+      --warn: #f4c28a;
     }
     * { box-sizing: border-box; }
     body {
@@ -20,119 +20,74 @@
       background:
         radial-gradient(circle at top right, rgba(191,148,88,.18), transparent 28%),
         linear-gradient(180deg, #ece1d0, var(--paper));
-      color: var(--ink);
-      font-family: "David Libre", "Noto Serif Hebrew", serif;
+      font-family: "Assistant", "Noto Sans Hebrew", sans-serif;
+      color: var(--mist);
+      background:
+        radial-gradient(circle at top left, rgba(158,231,194,.12), transparent 26%),
+        radial-gradient(circle at bottom right, rgba(244,194,138,.12), transparent 22%),
+        linear-gradient(160deg, #0c1214, var(--bg));
+      display: grid;
+      place-items: center;
     }
-    .wrap {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 28px 18px 40px;
-    }
-    .card {
-      background: var(--card);
+    .boot {
+      width: min(720px, calc(100vw - 32px));
+      padding: 28px;
+      border-radius: 28px;
       border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 12px 32px rgba(53, 40, 20, .08);
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 24px 48px rgba(0,0,0,.25);
     }
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 4vw, 42px);
+      margin: 0 0 10px;
+      font-size: clamp(28px, 5vw, 54px);
+      line-height: .95;
     }
-    .sub {
-      color: var(--muted);
-      margin-bottom: 18px;
-      line-height: 1.6;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap: 18px;
-    }
-    .stack { display: grid; gap: 18px; }
-    .metric {
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: #f4ecdf;
-      border: 1px solid var(--line);
-    }
-    .metric b {
-      display: block;
-      font-size: 22px;
-      margin-top: 4px;
-    }
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 12px 22px;
-      cursor: pointer;
-      font-size: 18px;
-      font-family: inherit;
-    }
-    .approve {
-      background: var(--green);
-      color: #fff;
-    }
-    .refresh {
-      background: #d9c7a7;
-      color: #2a241b;
-    }
-    pre {
+    p {
       margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #f1e6d4;
-      border-radius: 16px;
+      color: rgba(218,231,223,.78);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .meta {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+    .chip {
+      display: inline-flex;
+      width: fit-content;
+      padding: 10px 14px;
+      border-radius: 999px;
       border: 1px solid var(--line);
-      padding: 16px;
-      min-height: 220px;
+      color: var(--signal);
+      background: rgba(158,231,194,.06);
+    }
+    #status {
+      margin-top: 18px;
+      color: var(--warn);
       font-size: 14px;
-      line-height: 1.55;
-    }
-    .tiny {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 10px;
-    }
-    @media (max-width: 760px) {
-      .grid { grid-template-columns: 1fr; }
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>מכריע פשוט</h1>
-      <div class="sub">
-        בקשה ממתינה. אם לא לחצת <b>אשר</b> תוך 5 שניות, אברהם עובר ללימוד המפרט ומעלה את מונה הנסיונות עד לאישור.
-      </div>
-      <div class="grid">
-        <div class="stack">
-          <div class="metric">מצב נוכחי<b id="status">טוען...</b></div>
-          <div class="metric">נסיונות עד כה<b id="attempts">0</b></div>
-          <div class="metric">בקשה נוכחית<b id="requestText">אין</b></div>
-          <div class="metric">צומת צפה<b id="nodeState">טוען...</b></div>
-          <div class="actions">
-            <button class="approve" id="approveBtn">אשר</button>
-            <button class="refresh" id="refreshBtn">רענן</button>
-          </div>
-          <div class="tiny" id="hint"></div>
-        </div>
-        <pre id="raw">טוען...</pre>
-      </div>
+  <main class="boot">
+    <h1>שער צומת<br>סולחא</h1>
+    <p>
+      מעטפת זו רק מאתחלת את הצומת. ה־UI עצמו מגיע דינאמית מן הצומת החי דרך התקשורת האחודה.
+    </p>
+    <div class="meta">
+      <span class="chip">bootstrap only</span>
+      <span class="chip" id="apiHint">api: local</span>
     </div>
-  </div>
+    <div id="status">מאתחל צומת...</div>
+  </main>
   <script>
     function apiBase() {
       try {
         const q = new URLSearchParams(location.search);
-        const explicit = q.get('api') || localStorage.getItem('sulha_simple_api') || window.SULHA_SIMPLE_API || '';
+        const explicit = q.get('api') || localStorage.getItem('sulha_node_api') || localStorage.getItem('sulha_simple_api') || window.SULHA_NODE_API || '';
         return explicit ? String(explicit).replace(/\/$/, '') : '';
       } catch (_) {
         return '';
@@ -144,32 +99,26 @@
       return base ? (base + path) : path;
     }
 
-    async function loadState() {
-      const response = await fetch(apiUrl('/api/מצב'));
-      const data = await response.json();
-      const pending = data.ממתינה || null;
-      const node = data.צומת || null;
-      document.getElementById('status').textContent = pending ? pending.מצב : 'שקט';
-      document.getElementById('attempts').textContent = pending ? String(pending.נסיונות || 0) : '0';
-      document.getElementById('requestText').textContent = pending ? (pending.מה || 'אין') : 'אין';
-      document.getElementById('nodeState').textContent = node ? (node.מצב || 'שקט') : 'שקט';
-      document.getElementById('raw').textContent = JSON.stringify(data, null, 2);
-      document.getElementById('hint').textContent = 'API: ' + (apiBase() || 'מקומי');
+    async function boot() {
+      const status = document.getElementById('status');
+      document.getElementById('apiHint').textContent = 'api: ' + (apiBase() || 'local');
+      try {
+        const response = await fetch(apiUrl('/api/מצב'));
+        const data = await response.json();
+        const html = data && data.צומת && data.צומת.תוכן ? data.צומת.תוכן.html : '';
+        if (!html) {
+          status.textContent = 'הצומת עלה אך לא החזיר HTML.';
+          return;
+        }
+        document.open();
+        document.write(html);
+        document.close();
+      } catch (error) {
+        status.textContent = 'אתחול נכשל\n' + (error && error.message ? error.message : String(error));
+      }
     }
 
-    async function approve() {
-      await fetch(apiUrl('/api/אשר'), {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({מבקש: 'עובדיה עדי כהן'})
-      });
-      await loadState();
-    }
-
-    document.getElementById('approveBtn').addEventListener('click', approve);
-    document.getElementById('refreshBtn').addEventListener('click', loadState);
-    setInterval(loadState, 1000);
-    loadState();
+    boot();
   </script>
 </body>
 </html>
